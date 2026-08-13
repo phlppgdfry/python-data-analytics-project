@@ -1,56 +1,69 @@
-# Python Data Analytics Lab
+# Python Data Analytics Project
 
-Een groeiend end-to-end data-analyseproject. We leren telkens een concept,
-oefenen het klein, passen het toe in deze repository en leggen het vast met Git.
+Een volledige, werkende sales-analyticsportfolio-app. We zullen deze eindversie
+later stap voor stap ontleden en opnieuw opbouwen; zo zie je steeds waar een
+concept naartoe leidt.
 
-## Huidige fase: 0 — Python-basis
+```text
+CSV / PostgreSQL
+       ↓
+Pandas → cleaning → analyses & NumPy-statistiek → KPI's
+       ↓                         ↓
+ Matplotlib (PNG)           Plotly (interactief) → Streamlit-dashboard
+```
 
-We beginnen met de Python die je voor data-analyse nodig hebt:
+## Wat deze projectversie doet
 
-- variabelen en basistypes
-- strings, lists en dictionaries
-- voorwaarden en lussen
-- functies, imports en bestanden
-- virtual environments en packages
+1. Leest bewust onzuivere verkoopdata uit `data/raw/sales.csv`.
+2. Normaliseert landen, datums, prijzen en producten; verwijdert ongeldige en
+   dubbele rijen; berekent omzet.
+3. Levert KPI's, omzet per maand, land en product, plus statistieken.
+4. Genereert PNG-rapportgrafieken én interactieve Plotly-HTML.
+5. Toont dezelfde inzichten in een filterbaar Streamlit-dashboard.
 
-Daarna voegen we stap voor stap NumPy, Pandas, data cleaning, analyses,
-visualisaties, SQL en een dashboard toe.
-
-## Lokaal starten
+## Installeren en uitvoeren
 
 ```bash
 python3 -m venv .venv
 source .venv/bin/activate
-python src/01_python_basics.py
+python -m pip install -r requirements.txt
+python src/run_pipeline.py
+streamlit run dashboard/app.py
 ```
 
-Op Windows is het activeren van de omgeving:
+Na de pipeline staan de schone gegevens in `data/processed/cleaned_sales.csv`
+en de grafieken in `reports/charts/`.
 
-```powershell
-.venv\\Scripts\\Activate.ps1
-```
-
-## Projectstructuur (vandaag)
+## Projectstructuur
 
 ```text
-python-data-analytics-lab/
-├── data/       # toekomstige ruwe en verwerkte gegevens
-├── src/        # Python-code
-├── tests/      # automatische controles
-├── README.md
-└── requirements.txt
+python-data-analytics-project/
+├── data/raw/sales.csv              # brondata, met opzettelijke fouten
+├── data/processed/                 # output van de cleaning-pipeline
+├── src/                            # loading, cleaning, analyse, statistiek
+├── visualizations/                 # Matplotlib en Plotly
+├── dashboard/app.py                # interactieve Streamlit-app
+├── sql/                            # PostgreSQL-schema en voorbeeldqueries
+├── reports/charts/                 # gegenereerde grafieken
+└── tests/                          # pytest-controles
 ```
 
-## Leerlog
+## Belangrijkste zakelijke vragen
 
-| Stap | Onderwerp | Status |
+- Wat is de totale omzet, het aantal orders, klanten en de gemiddelde orderwaarde?
+- Hoe ontwikkelt omzet zich per maand?
+- Welke landen en producten dragen het meeste bij?
+- Hoe zijn individuele orderwaarden verdeeld?
+
+## Leerroute
+
+| Fase | Onderwerp | Waar je het terugziet |
 | --- | --- | --- |
-| 0.1 | Variabelen, getallen en functies | Bezig |
-| 1 | NumPy en statistiek | Gepland |
-| 2 | Pandas en CSV | Gepland |
-| 3 | Data cleaning | Gepland |
-| 4 | Zakelijke analyse en KPI's | Gepland |
-| 5 | Matplotlib | Gepland |
-| 6 | Plotly | Gepland |
-| 7 | PostgreSQL en SQL | Gepland |
-| 8 | Streamlit-dashboard | Gepland |
+| 0 | Python-basis en Git | `src/01_python_basics.py` |
+| 1 | NumPy/statistiek | `src/statistics.py` |
+| 2 | Pandas en CSV | `src/load_data.py` |
+| 3 | Data cleaning | `src/clean_data.py` |
+| 4 | Analyse en KPI's | `src/analysis.py` |
+| 5–6 | Matplotlib en Plotly | `visualizations/` |
+| 7 | PostgreSQL en SQL | `sql/`, `src/load_data.py` |
+| 8 | Dashboard | `dashboard/app.py` |
