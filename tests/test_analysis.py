@@ -1,6 +1,6 @@
 import pandas as pd
 
-from analysis import (
+from src.analysis import (
     calculate_kpis,
     calculate_period_comparison,
     filter_sales_data,

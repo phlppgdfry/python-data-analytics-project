@@ -4,13 +4,13 @@ from pathlib import Path
 import sys
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
-sys.path.insert(0, str(PROJECT_ROOT / "visualizations"))
+sys.path.insert(0, str(PROJECT_ROOT))
 
-from analysis import calculate_kpis, calculate_order_statistics, monthly_performance, revenue_by_country, revenue_by_month, revenue_by_product  # noqa: E402
-from clean_data import clean_sales_data, save_cleaned_sales_data  # noqa: E402
-from load_data import load_sales_csv  # noqa: E402
-from matplotlib_charts import create_static_charts  # noqa: E402
-from plotly_charts import create_interactive_charts  # noqa: E402
+from src.analysis import calculate_kpis, calculate_order_statistics, monthly_performance, revenue_by_country, revenue_by_month, revenue_by_product  # noqa: E402
+from src.clean_data import clean_sales_data, save_cleaned_sales_data  # noqa: E402
+from src.load_data import load_sales_csv  # noqa: E402
+from visualizations.matplotlib_charts import create_static_charts  # noqa: E402
+from visualizations.plotly_charts import create_interactive_charts  # noqa: E402
 
 
 CHARTS_DIR = PROJECT_ROOT / "reports" / "charts"

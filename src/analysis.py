@@ -2,7 +2,7 @@
 
 import pandas as pd
 
-from statistics import summarize_order_values
+from src.statistics import summarize_order_values
 
 
 def order_totals(data: pd.DataFrame) -> pd.DataFrame:

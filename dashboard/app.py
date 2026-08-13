@@ -9,9 +9,9 @@ import streamlit as st
 
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
-sys.path.insert(0, str(PROJECT_ROOT / "src"))
+sys.path.insert(0, str(PROJECT_ROOT))
 
-from analysis import (  # noqa: E402
+from src.analysis import (  # noqa: E402
     calculate_kpis,
     calculate_period_comparison,
     filter_sales_data,
@@ -21,10 +21,9 @@ from analysis import (  # noqa: E402
     revenue_by_month,
     revenue_by_product,
 )
-from clean_data import clean_sales_data, save_cleaned_sales_data  # noqa: E402
-from load_data import load_sales_csv  # noqa: E402
-sys.path.insert(0, str(PROJECT_ROOT / "visualizations"))
-from plotly_charts import create_monthly_performance_chart  # noqa: E402
+from src.clean_data import clean_sales_data, save_cleaned_sales_data  # noqa: E402
+from src.load_data import load_sales_csv  # noqa: E402
+from visualizations.plotly_charts import create_monthly_performance_chart  # noqa: E402
 
 
 st.set_page_config(page_title="Sales analytics", page_icon="📊", layout="wide")
@@ -94,7 +93,7 @@ columns[2].metric("Customers", f"{kpis['customers']:,}")
 columns[3].metric("Average order value", f"€{kpis['average_order_value']:,.2f}")
 
 st.caption(f"Compared with {previous_start:%d %b %Y} – {previous_end:%d %b %Y}")
-st.plotly_chart(create_monthly_performance_chart(monthly_performance(filtered_data)), use_container_width=True)
+st.plotly_chart(create_monthly_performance_chart(monthly_performance(filtered_data)), width="stretch")
 
 left, right = st.columns(2)
 with left:
@@ -108,7 +107,7 @@ with left:
             color_discrete_sequence=["#0F766E"],
             labels={"revenue": "Revenue (€)", "country": "Country"},
         ).update_layout(template="plotly_white", showlegend=False, margin={"l": 0, "r": 0, "t": 50, "b": 0}),
-        use_container_width=True,
+        width="stretch",
     )
 with right:
     st.plotly_chart(
@@ -121,7 +120,7 @@ with right:
             color_discrete_sequence=["#7C3AED"],
             labels={"revenue": "Revenue (€)", "product": "Product"},
         ).update_layout(template="plotly_white", showlegend=False, margin={"l": 0, "r": 0, "t": 50, "b": 0}),
-        use_container_width=True,
+        width="stretch",
     )
 
 country_data = revenue_by_country(filtered_data)
@@ -132,7 +131,7 @@ insight_left.success(f"**Top country:** {country_data.iloc[0]['country']} (€{c
 insight_right.success(f"**Top product:** {product_data.iloc[0]['product']} (€{product_data.iloc[0]['revenue']:,.2f})")
 
 with st.expander("View cleaned data"):
-    st.dataframe(filtered_data, use_container_width=True)
+    st.dataframe(filtered_data, width="stretch")
     st.download_button(
         "Download filtered data as CSV",
         data=filtered_data.to_csv(index=False).encode("utf-8"),

@@ -1,6 +1,6 @@
 import pandas as pd
 
-from clean_data import clean_sales_data
+from src.clean_data import clean_sales_data
 
 
 def test_cleaning_normalizes_values_and_removes_invalid_rows():
