@@ -1,6 +1,7 @@
 """Start met: streamlit run dashboard/app.py"""
 
 from pathlib import Path
+import os
 import sys
 
 import pandas as pd
@@ -28,7 +29,7 @@ from src.analysis import (  # noqa: E402
     top_customers,
 )
 from src.clean_data import clean_sales_data  # noqa: E402
-from src.load_data import load_customer_directory_csv, load_monthly_targets_csv, load_sales_csv  # noqa: E402
+from src.load_data import load_customer_directory_csv, load_monthly_targets_csv, load_sales_csv, load_sales_from_postgres  # noqa: E402
 from visualizations.plotly_charts import create_actual_vs_target_chart, create_cohort_retention_chart, create_monthly_performance_chart  # noqa: E402
 
 
@@ -49,12 +50,26 @@ st.markdown(
 RAW_DATA_PATH = PROJECT_ROOT / "data" / "raw" / "sales.csv"
 TARGETS_DATA_PATH = PROJECT_ROOT / "data" / "raw" / "monthly_targets.csv"
 CUSTOMERS_DATA_PATH = PROJECT_ROOT / "data" / "raw" / "customers.csv"
+POSTGRES_QUERY_PATH = PROJECT_ROOT / "sql" / "dashboard_sales.sql"
+
+
+def get_database_url() -> str | None:
+    """Lees een optionele lokale of cloud databaseverbinding zonder secrets te loggen."""
+    if database_url := os.getenv("DATABASE_URL"):
+        return database_url
+    try:
+        return st.secrets.get("DATABASE_URL")
+    except Exception:
+        return None
 
 
 @st.cache_data
-def get_sales_data(source_version: int) -> pd.DataFrame:
-    """Clean raw data; its file version safely refreshes Streamlit's cache."""
+def get_sales_data(source_version: int, database_url: str | None) -> pd.DataFrame:
+    """Gebruik PostgreSQL wanneer geconfigureerd, anders de betrouwbare CSV-fallback."""
     del source_version
+    if database_url:
+        query = POSTGRES_QUERY_PATH.read_text(encoding="utf-8")
+        return clean_sales_data(load_sales_from_postgres(database_url, query))
     return clean_sales_data(load_sales_csv(RAW_DATA_PATH))
 
 
@@ -72,12 +87,14 @@ def get_customer_directory(source_version: int) -> pd.DataFrame:
     return load_customer_directory_csv(CUSTOMERS_DATA_PATH)
 
 
-data = get_sales_data(RAW_DATA_PATH.stat().st_mtime_ns)
+database_url = get_database_url()
+data = get_sales_data(RAW_DATA_PATH.stat().st_mtime_ns, database_url)
 monthly_targets = get_monthly_targets(TARGETS_DATA_PATH.stat().st_mtime_ns)
 customer_directory = get_customer_directory(CUSTOMERS_DATA_PATH.stat().st_mtime_ns)
 st.markdown('<p class="eyebrow">Portfolio project · Sales intelligence</p>', unsafe_allow_html=True)
 st.title("Sales analytics dashboard")
 st.caption("Analyseer 24 maanden verkoopdata, vergelijk periodes en exporteer gefilterde inzichten.")
+st.caption("Data source: PostgreSQL" if database_url else "Data source: CSV fallback")
 
 with st.sidebar:
     st.header("Filters")

@@ -1,0 +1,7 @@
+{
+  "raw_rows": 904,
+  "clean_rows": 900,
+  "removed_rows": 4,
+  "duplicate_orders": 1,
+  "retention_percent": 99.56
+}

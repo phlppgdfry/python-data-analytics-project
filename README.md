@@ -119,9 +119,26 @@ De portfolio-app kan al queryresultaten uit PostgreSQL in Pandas laden via
 in [docs/CLOUD_POSTGRES.md](docs/CLOUD_POSTGRES.md). Databasecredentials horen
 uitsluitend in Streamlit secrets, nooit in Git.
 
+## PostgreSQL lokaal met Docker
+
+Voor een realistische lokale bedrijfsflow start je PostgreSQL met Docker en
+laad je de schoongemaakte data erin:
+
+```bash
+docker compose up -d
+python src/load_to_postgres.py
+DATABASE_URL="postgresql+psycopg://analytics_user:analytics_dev_password@localhost:5433/analytics" streamlit run dashboard/app.py
+```
+
+De app toont dan **Data source: PostgreSQL**. Zonder `DATABASE_URL` gebruikt
+dezelfde app automatisch de CSV-fallback, waardoor de publieke demo betrouwbaar
+en gratis blijft.
+
 ## Data quality
 
 Naast de cleaning-pipeline valideert [Pandera](https://pandera.readthedocs.io/)
 de finale dataset als data contract: verplichte kolommen, geldige landen en
 producten, unieke order-ID's, positieve prijzen/kosten en een geldige marge.
 Een foute bronrij komt dus niet stilzwijgend in het dashboard terecht.
+De pipeline schrijft bovendien `reports/data_quality_report.json` met het aantal
+bronrijen, verwijderde rijen, dubbele orders en behoudpercentage.
