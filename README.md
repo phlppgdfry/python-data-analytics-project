@@ -4,6 +4,8 @@
 
 **[Open the live dashboard →](https://sales-analytics-phlppgdfry.streamlit.app/)**
 
+![Sales analytics dashboard preview](assets/dashboard-preview.png)
+
 Een volledige, werkende sales-analyticsportfolio-app. We zullen deze eindversie
 later stap voor stap ontleden en opnieuw opbouwen; zo zie je steeds waar een
 concept naartoe leidt.
