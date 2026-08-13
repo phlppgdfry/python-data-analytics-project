@@ -21,7 +21,7 @@ from src.analysis import (  # noqa: E402
     revenue_by_month,
     revenue_by_product,
 )
-from src.clean_data import clean_sales_data, save_cleaned_sales_data  # noqa: E402
+from src.clean_data import clean_sales_data  # noqa: E402
 from src.load_data import load_sales_csv  # noqa: E402
 from visualizations.plotly_charts import create_monthly_performance_chart  # noqa: E402
 
@@ -40,17 +40,17 @@ st.markdown(
 )
 
 
+RAW_DATA_PATH = PROJECT_ROOT / "data" / "raw" / "sales.csv"
+
+
 @st.cache_data
-def get_sales_data() -> pd.DataFrame:
-    processed_path = PROJECT_ROOT / "data" / "processed" / "cleaned_sales.csv"
-    if processed_path.exists():
-        return pd.read_csv(processed_path, parse_dates=["order_date"])
-    data = clean_sales_data(load_sales_csv())
-    save_cleaned_sales_data(data)
-    return data
+def get_sales_data(source_version: int) -> pd.DataFrame:
+    """Clean raw data; its file version safely refreshes Streamlit's cache."""
+    del source_version
+    return clean_sales_data(load_sales_csv(RAW_DATA_PATH))
 
 
-data = get_sales_data()
+data = get_sales_data(RAW_DATA_PATH.stat().st_mtime_ns)
 st.markdown('<p class="eyebrow">Portfolio project · Sales intelligence</p>', unsafe_allow_html=True)
 st.title("Sales analytics dashboard")
 st.caption("Analyseer 24 maanden verkoopdata, vergelijk periodes en exporteer gefilterde inzichten.")
