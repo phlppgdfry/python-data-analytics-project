@@ -25,6 +25,24 @@ def calculate_kpis(data: pd.DataFrame) -> dict[str, float | int]:
     }
 
 
+def filter_sales_data(
+    data: pd.DataFrame,
+    countries: list[str],
+    products: list[str],
+    start_date: object,
+    end_date: object,
+) -> pd.DataFrame:
+    """Filter sales-data inclusief de gekozen begin- en einddatum."""
+    start = pd.Timestamp(start_date)
+    end = pd.Timestamp(end_date)
+    matches = (
+        data["country"].isin(countries)
+        & data["product"].isin(products)
+        & data["order_date"].between(start, end)
+    )
+    return data.loc[matches].copy()
+
+
 def revenue_by_month(data: pd.DataFrame) -> pd.DataFrame:
     """Tel omzet op per kalendermaand."""
     result = data.assign(month=data["order_date"].dt.to_period("M").dt.to_timestamp())

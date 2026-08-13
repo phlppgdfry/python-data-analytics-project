@@ -11,7 +11,13 @@ import streamlit as st
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(PROJECT_ROOT / "src"))
 
-from analysis import calculate_kpis, revenue_by_country, revenue_by_month, revenue_by_product  # noqa: E402
+from analysis import (  # noqa: E402
+    calculate_kpis,
+    filter_sales_data,
+    revenue_by_country,
+    revenue_by_month,
+    revenue_by_product,
+)
 from clean_data import clean_sales_data, save_cleaned_sales_data  # noqa: E402
 from load_data import load_sales_csv  # noqa: E402
 
@@ -35,10 +41,20 @@ st.caption("Interactief overzicht van de schoongemaakte voorbeeldverkoopdata.")
 
 with st.sidebar:
     st.header("Filters")
+    selected_dates = st.date_input(
+        "Order period",
+        value=(data["order_date"].min().date(), data["order_date"].max().date()),
+        min_value=data["order_date"].min().date(),
+        max_value=data["order_date"].max().date(),
+    )
     countries = st.multiselect("Country", sorted(data["country"].unique()), default=sorted(data["country"].unique()))
     products = st.multiselect("Product", sorted(data["product"].unique()), default=sorted(data["product"].unique()))
 
-filtered_data = data[data["country"].isin(countries) & data["product"].isin(products)]
+if len(selected_dates) != 2:
+    st.info("Selecteer een begin- en einddatum om de analyse te tonen.")
+    st.stop()
+
+filtered_data = filter_sales_data(data, countries, products, selected_dates[0], selected_dates[1])
 if filtered_data.empty:
     st.warning("Geen gegevens voor deze filters.")
     st.stop()
@@ -59,5 +75,18 @@ with left:
 with right:
     st.plotly_chart(px.bar(revenue_by_product(filtered_data), x="product", y="revenue", title="Top products"), use_container_width=True)
 
+country_data = revenue_by_country(filtered_data)
+product_data = revenue_by_product(filtered_data)
+st.subheader("Key insights")
+insight_left, insight_right = st.columns(2)
+insight_left.info(f"**Top country:** {country_data.iloc[0]['country']} (€{country_data.iloc[0]['revenue']:,.2f})")
+insight_right.info(f"**Top product:** {product_data.iloc[0]['product']} (€{product_data.iloc[0]['revenue']:,.2f})")
+
 with st.expander("View cleaned data"):
     st.dataframe(filtered_data, use_container_width=True)
+    st.download_button(
+        "Download filtered data as CSV",
+        data=filtered_data.to_csv(index=False).encode("utf-8"),
+        file_name="filtered_sales_data.csv",
+        mime="text/csv",
+    )

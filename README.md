@@ -1,5 +1,7 @@
 # Python Data Analytics Project
 
+[![Tests](https://github.com/phlppgdfry/python-data-analytics-project/actions/workflows/tests.yml/badge.svg)](https://github.com/phlppgdfry/python-data-analytics-project/actions/workflows/tests.yml)
+
 Een volledige, werkende sales-analyticsportfolio-app. We zullen deze eindversie
 later stap voor stap ontleden en opnieuw opbouwen; zo zie je steeds waar een
 concept naartoe leidt.
@@ -20,6 +22,14 @@ Pandas → cleaning → analyses & NumPy-statistiek → KPI's
 3. Levert KPI's, omzet per maand, land en product, plus statistieken.
 4. Genereert PNG-rapportgrafieken én interactieve Plotly-HTML.
 5. Toont dezelfde inzichten in een filterbaar Streamlit-dashboard.
+
+## Dashboardfeatures
+
+- filters op periode, land en product;
+- KPI-kaarten voor omzet, orders, klanten en gemiddelde orderwaarde;
+- interactieve omzettrend en vergelijkingen per land en product;
+- belangrijkste land- en productinzicht voor de geselecteerde data;
+- download van de gefilterde, opgeschoonde data als CSV.
 
 ## Installeren en uitvoeren
 
