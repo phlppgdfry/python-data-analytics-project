@@ -15,9 +15,9 @@ def create_monthly_performance_chart(performance_data: pd.DataFrame) -> go.Figur
     figure.add_trace(go.Scatter(x=performance_data["month"], y=performance_data["orders"], name="Orders", mode="lines+markers", line={"color": "#F97316", "width": 3}), secondary_y=True)
     figure.update_layout(
         template="plotly_white",
-        title={"text": "Monthly revenue and orders", "x": 0, "xanchor": "left", "y": 0.98, "yanchor": "top"},
-        legend={"orientation": "h", "x": 0, "xanchor": "left", "y": 0.87, "yanchor": "top"},
-        margin={"l": 0, "r": 0, "t": 110, "b": 0},
+        title={"text": "Monthly revenue and orders", "x": 0, "xanchor": "left"},
+        legend={"orientation": "h", "x": 0, "xanchor": "left", "y": 1.02, "yanchor": "bottom"},
+        margin={"l": 0, "r": 0, "t": 85, "b": 0},
     )
     figure.update_yaxes(title_text="Revenue (€)", secondary_y=False)
     figure.update_yaxes(title_text="Orders", secondary_y=True)
