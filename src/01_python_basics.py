@@ -20,3 +20,10 @@ print(f"Omzet schoenen: €{shoe_revenue:.2f}")
 # 1. Maak twee variabelen voor de prijs en hoeveelheid van een jas.
 # 2. Gebruik calculate_revenue om de omzet te berekenen.
 # 3. Print het resultaat op dezelfde manier als hierboven.
+
+
+jacket_price = 129.99
+jacket_quantity = 3
+jacket_revenue = calculate_revenue(jacket_price, jacket_quantity)
+
+print(f"Omzet jas: €{jacket_revenue:.2f}")
