@@ -173,6 +173,11 @@ def format_delta(change: float | None) -> str:
     return "No prior period" if change is None else f"{change:+.1f}% vs prior period"
 
 
+def format_compact_currency(amount: float) -> str:
+    """Houd grote bedragen volledig leesbaar in compacte dashboard-KPI's."""
+    return f"€{amount / 1_000:,.1f}K" if abs(amount) >= 1_000 else f"€{amount:,.2f}"
+
+
 def load_quality_report() -> dict[str, int | float]:
     """Lees het meest recente pipeline-kwaliteitsrapport voor de quality-pagina."""
     if not QUALITY_REPORT_PATH.exists():

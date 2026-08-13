@@ -12,7 +12,7 @@ from src.analysis import (
     revenue_by_product,
     revenue_vs_target,
 )
-from dashboard.shared import format_delta, get_dashboard_context, page_intro
+from dashboard.shared import format_compact_currency, format_delta, get_dashboard_context, page_intro
 from visualizations.plotly_charts import create_monthly_performance_chart
 
 
@@ -36,8 +36,8 @@ target_total = float(target_data["target_revenue"].sum())
 target_attainment = target_data["revenue"].sum() / target_total * 100 if target_total else 0.0
 
 columns = st.columns(5)
-columns[0].metric("Revenue", f"€{kpis['total_revenue']:,.2f}", delta=format_delta(comparison["revenue_change_percent"]), help="Totale omzet voor de gekozen filters.")
-columns[1].metric("Gross profit", f"€{profit_kpis['gross_profit']:,.2f}", help="Omzet min directe productkosten.")
+columns[0].metric("Revenue", format_compact_currency(kpis["total_revenue"]), delta=format_delta(comparison["revenue_change_percent"]), help=f"Exact revenue: €{kpis['total_revenue']:,.2f}.")
+columns[1].metric("Gross profit", format_compact_currency(profit_kpis["gross_profit"]), help=f"Exact gross profit: €{profit_kpis['gross_profit']:,.2f}.")
 columns[2].metric("Gross margin", f"{profit_kpis['margin_percent']:.1f}%", help="Brutowinst als percentage van omzet.")
 columns[3].metric("Orders", f"{kpis['orders']:,}", delta=format_delta(comparison["orders_change_percent"]), help="Aantal unieke orders.")
 columns[4].metric("Target progress", f"{target_attainment:.1f}%", help="Werkelijke omzet tegenover het maanddoel voor de geselecteerde maanden.")
