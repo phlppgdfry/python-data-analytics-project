@@ -44,6 +44,7 @@ The dashboard is split into focused pages rather than one long report:
 - **Data quality** — the data contract, retained-row rate and the latest quality report.
 
 All pages share the same date, country and product filters. The forecast deliberately uses the complete history so it remains statistically meaningful when exploration filters are narrow.
+Large monetary KPI cards use compact accounting notation (for example, `€263.9K`) to remain readable at every screen width; hovering the KPI reveals the exact value.
 
 ## Demo insights
 
