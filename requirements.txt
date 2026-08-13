@@ -6,4 +6,5 @@ plotly>=5.24
 streamlit>=1.40
 sqlalchemy>=2.0
 psycopg[binary]>=3.2
+statsmodels>=0.14
 pytest>=8.0

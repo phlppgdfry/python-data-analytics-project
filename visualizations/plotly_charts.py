@@ -52,6 +52,13 @@ def create_cohort_retention_chart(retention_data: pd.DataFrame) -> go.Figure:
     return figure
 
 
+def create_forecast_chart(forecast_data: pd.DataFrame) -> go.Figure:
+    """Toon historische omzet samen met een visueel onderscheiden forecast."""
+    figure = px.line(forecast_data, x="month", y="revenue", color="series", markers=True, color_discrete_map={"Actual": "#2563EB", "Forecast": "#F97316"}, title="Three-month revenue forecast", labels={"revenue": "Revenue (€)", "month": "Month"})
+    figure.update_layout(template="plotly_white", margin={"l": 0, "r": 0, "t": 55, "b": 0})
+    return figure
+
+
 def create_interactive_charts(monthly_data: pd.DataFrame, country_data: pd.DataFrame, product_data: pd.DataFrame, output_dir: str | Path, performance_data: pd.DataFrame | None = None) -> list[Path]:
     """Schrijf dezelfde kerninzichten als interactieve HTML weg."""
     directory = Path(output_dir)

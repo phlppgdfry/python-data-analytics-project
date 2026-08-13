@@ -29,8 +29,9 @@ from src.analysis import (  # noqa: E402
     top_customers,
 )
 from src.clean_data import clean_sales_data  # noqa: E402
+from src.forecasting import forecast_monthly_revenue, generate_alerts  # noqa: E402
 from src.load_data import load_customer_directory_csv, load_monthly_targets_csv, load_sales_csv, load_sales_from_postgres  # noqa: E402
-from visualizations.plotly_charts import create_actual_vs_target_chart, create_cohort_retention_chart, create_monthly_performance_chart  # noqa: E402
+from visualizations.plotly_charts import create_actual_vs_target_chart, create_cohort_retention_chart, create_forecast_chart, create_monthly_performance_chart  # noqa: E402
 
 
 st.set_page_config(page_title="Sales analytics", page_icon="📊", layout="wide")
@@ -221,3 +222,15 @@ with customer_right:
     )
 
 st.plotly_chart(create_cohort_retention_chart(cohort_retention(filtered_data)), width="stretch")
+
+st.divider()
+st.header("Advanced analytics")
+st.plotly_chart(create_forecast_chart(forecast_monthly_revenue(data)), width="stretch")
+st.caption("Forecast and alerts use the complete business history to preserve a stable time series.")
+st.subheader("Automated alerts")
+alerts = generate_alerts(data, monthly_targets)
+if alerts:
+    for alert in alerts:
+        getattr(st, alert["level"])(alert["message"])
+else:
+    st.success("No material anomalies or target risks detected for the selected period.")

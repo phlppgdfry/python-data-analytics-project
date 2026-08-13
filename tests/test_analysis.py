@@ -119,3 +119,26 @@ def test_customer_lifecycle_and_cohort_retention():
     assert lifecycle_data.sort_values("customer_id")["customer_type"].tolist() == ["Returning", "New"]
     assert retention.loc["2025-01", 1] == 1.0
     assert retention.loc["2025-02", 1] == 1.0
+
+
+def test_forecast_and_anomaly_detection():
+    from src.forecasting import detect_monthly_anomalies, forecast_monthly_revenue
+
+    dates = pd.date_range("2024-01-01", periods=12, freq="MS")
+    data = pd.DataFrame(
+        {
+            "order_id": range(1, 13),
+            "order_date": dates,
+            "customer_id": [f"C{number:03d}" for number in range(1, 13)],
+            "country": ["Belgium"] * 12,
+            "product": ["Shoes"] * 12,
+            "revenue": [100.0 * (index + 1) for index in range(12)],
+            "gross_profit": [40.0 * (index + 1) for index in range(12)],
+        }
+    )
+
+    forecast = forecast_monthly_revenue(data, periods=3)
+    anomalies = detect_monthly_anomalies(data)
+
+    assert forecast["series"].value_counts().to_dict() == {"Actual": 12, "Forecast": 3}
+    assert len(anomalies) == 12

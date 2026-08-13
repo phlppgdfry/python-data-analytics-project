@@ -36,6 +36,7 @@ Pandas → cleaning → analyses & NumPy-statistiek → KPI's
 - gecombineerde interactieve grafiek voor maandelijkse omzet én orders;
 - actual-versus-target-grafiek en een topklantenoverzicht;
 - nieuwe versus terugkerende klanten, RFM-segmenten en cohortretentie;
+- een drie-maanden omzetforecast, anomaliedetectie en automatische alerts;
 - interactieve vergelijkingen per land en product;
 - belangrijkste land- en productinzicht voor de geselecteerde data;
 - download van de gefilterde, opgeschoonde data als CSV.
@@ -142,3 +143,11 @@ producten, unieke order-ID's, positieve prijzen/kosten en een geldige marge.
 Een foute bronrij komt dus niet stilzwijgend in het dashboard terecht.
 De pipeline schrijft bovendien `reports/data_quality_report.json` met het aantal
 bronrijen, verwijderde rijen, dubbele orders en behoudpercentage.
+
+## Advanced analytics
+
+Met `statsmodels` maakt de app een drie-maanden omzetforecast op basis van de
+volledige maandhistoriek. Een z-score detecteert maanden met uitzonderlijke
+omzet; samen met target attainment levert dat compacte, actioneerbare alerts
+in het dashboard op. De forecast gebruikt synthetische data en is daarom een
+technische demonstratie, geen financieel advies.
