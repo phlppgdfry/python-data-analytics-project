@@ -2,6 +2,8 @@
 
 [![Tests](https://github.com/phlppgdfry/python-data-analytics-project/actions/workflows/tests.yml/badge.svg)](https://github.com/phlppgdfry/python-data-analytics-project/actions/workflows/tests.yml)
 
+**[Open the live dashboard →](https://sales-analytics-phlppgdfry.streamlit.app/)**
+
 Een volledige, werkende sales-analyticsportfolio-app. We zullen deze eindversie
 later stap voor stap ontleden en opnieuw opbouwen; zo zie je steeds waar een
 concept naartoe leidt.
