@@ -25,6 +25,16 @@ def calculate_kpis(data: pd.DataFrame) -> dict[str, float | int]:
     }
 
 
+def calculate_profit_kpis(data: pd.DataFrame) -> dict[str, float]:
+    """Bereken brutowinst en brutomarge voor de geselecteerde verkopen."""
+    total_revenue = float(data["revenue"].sum())
+    gross_profit = float(data["gross_profit"].sum())
+    return {
+        "gross_profit": round(gross_profit, 2),
+        "margin_percent": round(gross_profit / total_revenue * 100, 2) if total_revenue else 0.0,
+    }
+
+
 def filter_sales_data(
     data: pd.DataFrame,
     countries: list[str],
@@ -93,6 +103,35 @@ def revenue_by_country(data: pd.DataFrame) -> pd.DataFrame:
 def revenue_by_product(data: pd.DataFrame) -> pd.DataFrame:
     """Tel omzet op per product, hoog naar laag."""
     return data.groupby("product", as_index=False)["revenue"].sum().sort_values("revenue", ascending=False)
+
+
+def profit_by_country(data: pd.DataFrame) -> pd.DataFrame:
+    """Tel brutowinst op per land."""
+    return data.groupby("country", as_index=False)["gross_profit"].sum().sort_values("gross_profit", ascending=False)
+
+
+def profit_by_product(data: pd.DataFrame) -> pd.DataFrame:
+    """Tel brutowinst op per product."""
+    return data.groupby("product", as_index=False)["gross_profit"].sum().sort_values("gross_profit", ascending=False)
+
+
+def revenue_vs_target(data: pd.DataFrame, monthly_targets: pd.DataFrame) -> pd.DataFrame:
+    """Vergelijk werkelijke omzet met het maandelijkse omzetdoel."""
+    actual = revenue_by_month(data)
+    result = actual.merge(monthly_targets, on="month", how="left", validate="one_to_one")
+    result["variance"] = (result["revenue"] - result["target_revenue"]).round(2)
+    result["target_attainment_percent"] = (result["revenue"] / result["target_revenue"] * 100).round(1)
+    return result
+
+
+def top_customers(data: pd.DataFrame, limit: int = 10) -> pd.DataFrame:
+    """Geef de klanten met de hoogste omzet inclusief orderaantal en winst."""
+    return (
+        data.groupby("customer_id", as_index=False)
+        .agg(revenue=("revenue", "sum"), gross_profit=("gross_profit", "sum"), orders=("order_id", "nunique"))
+        .sort_values("revenue", ascending=False)
+        .head(limit)
+    )
 
 
 def calculate_order_statistics(data: pd.DataFrame) -> dict[str, float]:

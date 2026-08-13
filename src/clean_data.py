@@ -4,10 +4,12 @@ from pathlib import Path
 
 import pandas as pd
 
+from src.validation import validate_clean_sales_data
+
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 PROCESSED_DATA_PATH = PROJECT_ROOT / "data" / "processed" / "cleaned_sales.csv"
-REQUIRED_COLUMNS = ["order_id", "order_date", "customer_id", "country", "product", "quantity", "price"]
+REQUIRED_COLUMNS = ["order_id", "order_date", "customer_id", "country", "product", "quantity", "price", "unit_cost"]
 COUNTRY_NAMES = {
     "belgium": "Belgium",
     "france": "France",
@@ -38,13 +40,17 @@ def clean_sales_data(raw_data: pd.DataFrame) -> pd.DataFrame:
     data["product"] = data["product"].astype("string").str.strip().str.title()
     data["quantity"] = pd.to_numeric(data["quantity"], errors="coerce")
     data["price"] = data["price"].map(_parse_price)
+    data["unit_cost"] = data["unit_cost"].map(_parse_price)
 
     data = data.drop_duplicates(subset="order_id")
     data = data.dropna(subset=REQUIRED_COLUMNS)
-    data = data.query("quantity > 0 and quantity <= 100 and price > 0")
+    data = data.query("quantity > 0 and quantity <= 100 and price > 0 and unit_cost > 0 and unit_cost < price")
     data["quantity"] = data["quantity"].astype(int)
     data["revenue"] = (data["quantity"] * data["price"]).round(2)
-    return data.sort_values(["order_date", "order_id"]).reset_index(drop=True)
+    data["gross_profit"] = (data["quantity"] * (data["price"] - data["unit_cost"])).round(2)
+    data["margin_percent"] = (data["gross_profit"] / data["revenue"] * 100).round(2)
+    cleaned_data = data.sort_values(["order_date", "order_id"]).reset_index(drop=True)
+    return validate_clean_sales_data(cleaned_data)
 
 
 def save_cleaned_sales_data(data: pd.DataFrame, path: str | Path = PROCESSED_DATA_PATH) -> Path:

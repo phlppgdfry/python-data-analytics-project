@@ -24,6 +24,21 @@ def create_monthly_performance_chart(performance_data: pd.DataFrame) -> go.Figur
     return figure
 
 
+def create_actual_vs_target_chart(target_data: pd.DataFrame) -> go.Figure:
+    """Toon werkelijke omzet als kolommen tegenover een maandtargetlijn."""
+    figure = go.Figure()
+    figure.add_trace(go.Bar(x=target_data["month"], y=target_data["revenue"], name="Actual revenue", marker_color="#2563EB"))
+    figure.add_trace(go.Scatter(x=target_data["month"], y=target_data["target_revenue"], name="Revenue target", mode="lines+markers", line={"color": "#F97316", "width": 3, "dash": "dash"}))
+    figure.update_layout(
+        template="plotly_white",
+        title={"text": "Actual revenue vs target", "x": 0, "xanchor": "left"},
+        legend={"orientation": "h", "x": 0, "xanchor": "left", "y": 1.02, "yanchor": "bottom"},
+        margin={"l": 0, "r": 0, "t": 85, "b": 0},
+        yaxis_title="Revenue (€)",
+    )
+    return figure
+
+
 def create_interactive_charts(monthly_data: pd.DataFrame, country_data: pd.DataFrame, product_data: pd.DataFrame, output_dir: str | Path, performance_data: pd.DataFrame | None = None) -> list[Path]:
     """Schrijf dezelfde kerninzichten als interactieve HTML weg."""
     directory = Path(output_dir)

@@ -23,7 +23,7 @@ Pandas → cleaning → analyses & NumPy-statistiek → KPI's
 1. Leest 24 maanden bewust onzuivere verkoopdata uit `data/raw/sales.csv`.
 2. Normaliseert landen, datums, prijzen en producten; verwijdert ongeldige en
    dubbele rijen; berekent omzet.
-3. Levert KPI's, omzet per maand, land en product, plus statistieken.
+3. Levert omzet-, brutowinst-, marge- en target-KPI's, plus statistieken.
 4. Genereert PNG-rapportgrafieken én interactieve Plotly-HTML.
 5. Toont dezelfde inzichten in een filterbaar Streamlit-dashboard.
 
@@ -31,8 +31,10 @@ Pandas → cleaning → analyses & NumPy-statistiek → KPI's
 
 - filters op periode, land en product;
 - KPI-kaarten voor omzet, orders, klanten en gemiddelde orderwaarde;
+- brutowinst, brutomarge en maandelijkse omzetdoelen;
 - automatische vergelijking met de vorige even lange periode;
 - gecombineerde interactieve grafiek voor maandelijkse omzet én orders;
+- actual-versus-target-grafiek en een topklantenoverzicht;
 - interactieve vergelijkingen per land en product;
 - belangrijkste land- en productinzicht voor de geselecteerde data;
 - download van de gefilterde, opgeschoonde data als CSV.
@@ -60,6 +62,7 @@ met december 2025. Ze laat onder andere zien dat:
   (**+41,1%**);
 - België met **€42.634,92** de grootste markt is;
 - Shoes met **€46.074,88** de hoogste productomzet heeft.
+- de totale brutowinst **€73.943,92** is bij een marge van **56,76%**.
 
 De waarden zijn synthetisch, maar de cleaning-, analyse- en dashboardflow is
 dezelfde als voor echte bedrijfsdata.
@@ -69,8 +72,9 @@ dezelfde als voor echte bedrijfsdata.
 ```text
 python-data-analytics-project/
 ├── data/raw/sales.csv              # brondata, met opzettelijke fouten
+├── data/raw/monthly_targets.csv    # maandelijkse omzetdoelen
 ├── data/processed/                 # output van de cleaning-pipeline
-├── src/                            # loading, cleaning, analyse, statistiek
+├── src/                            # loading, cleaning, validatie, analyse, statistiek
 ├── visualizations/                 # Matplotlib en Plotly
 ├── dashboard/app.py                # interactieve Streamlit-app
 ├── sql/                            # PostgreSQL-schema en voorbeeldqueries
@@ -105,3 +109,10 @@ De portfolio-app kan al queryresultaten uit PostgreSQL in Pandas laden via
 `src/load_data.py`. Voor een live cloud-database staat de veilige stappenkaart
 in [docs/CLOUD_POSTGRES.md](docs/CLOUD_POSTGRES.md). Databasecredentials horen
 uitsluitend in Streamlit secrets, nooit in Git.
+
+## Data quality
+
+Naast de cleaning-pipeline valideert [Pandera](https://pandera.readthedocs.io/)
+de finale dataset als data contract: verplichte kolommen, geldige landen en
+producten, unieke order-ID's, positieve prijzen/kosten en een geldige marge.
+Een foute bronrij komt dus niet stilzwijgend in het dashboard terecht.

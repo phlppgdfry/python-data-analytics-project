@@ -74,3 +74,24 @@ def test_period_comparison_and_monthly_performance():
         {"month": pd.Timestamp("2025-01-01"), "revenue": 200.0, "orders": 2},
         {"month": pd.Timestamp("2025-02-01"), "revenue": 300.0, "orders": 2},
     ]
+
+
+def test_profit_target_and_customer_analyses():
+    from src.analysis import calculate_profit_kpis, revenue_vs_target, top_customers
+
+    data = pd.DataFrame(
+        {
+            "order_id": [1, 2, 3],
+            "order_date": pd.to_datetime(["2025-01-01", "2025-01-10", "2025-02-01"]),
+            "customer_id": ["C1", "C1", "C2"],
+            "country": ["Belgium", "Belgium", "France"],
+            "product": ["Shoes", "Jacket", "Shirt"],
+            "revenue": [100.0, 200.0, 50.0],
+            "gross_profit": [40.0, 80.0, 20.0],
+        }
+    )
+    targets = pd.DataFrame({"month": pd.to_datetime(["2025-01-01", "2025-02-01"]), "target_revenue": [250.0, 60.0]})
+
+    assert calculate_profit_kpis(data) == {"gross_profit": 140.0, "margin_percent": 40.0}
+    assert revenue_vs_target(data, targets)["target_attainment_percent"].tolist() == [120.0, 83.3]
+    assert top_customers(data, limit=1).iloc[0].to_dict() == {"customer_id": "C1", "revenue": 300.0, "gross_profit": 120.0, "orders": 2}

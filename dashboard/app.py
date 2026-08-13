@@ -13,6 +13,7 @@ sys.path.insert(0, str(PROJECT_ROOT))
 
 from src.analysis import (  # noqa: E402
     calculate_kpis,
+    calculate_profit_kpis,
     calculate_period_comparison,
     filter_sales_data,
     monthly_performance,
@@ -20,10 +21,12 @@ from src.analysis import (  # noqa: E402
     revenue_by_country,
     revenue_by_month,
     revenue_by_product,
+    revenue_vs_target,
+    top_customers,
 )
 from src.clean_data import clean_sales_data  # noqa: E402
-from src.load_data import load_sales_csv  # noqa: E402
-from visualizations.plotly_charts import create_monthly_performance_chart  # noqa: E402
+from src.load_data import load_monthly_targets_csv, load_sales_csv  # noqa: E402
+from visualizations.plotly_charts import create_actual_vs_target_chart, create_monthly_performance_chart  # noqa: E402
 
 
 st.set_page_config(page_title="Sales analytics", page_icon="📊", layout="wide")
@@ -41,6 +44,7 @@ st.markdown(
 
 
 RAW_DATA_PATH = PROJECT_ROOT / "data" / "raw" / "sales.csv"
+TARGETS_DATA_PATH = PROJECT_ROOT / "data" / "raw" / "monthly_targets.csv"
 
 
 @st.cache_data
@@ -50,7 +54,15 @@ def get_sales_data(source_version: int) -> pd.DataFrame:
     return clean_sales_data(load_sales_csv(RAW_DATA_PATH))
 
 
+@st.cache_data
+def get_monthly_targets(source_version: int) -> pd.DataFrame:
+    """Load monthly targets and refresh them whenever their source file changes."""
+    del source_version
+    return load_monthly_targets_csv(TARGETS_DATA_PATH)
+
+
 data = get_sales_data(RAW_DATA_PATH.stat().st_mtime_ns)
+monthly_targets = get_monthly_targets(TARGETS_DATA_PATH.stat().st_mtime_ns)
 st.markdown('<p class="eyebrow">Portfolio project · Sales intelligence</p>', unsafe_allow_html=True)
 st.title("Sales analytics dashboard")
 st.caption("Analyseer 24 maanden verkoopdata, vergelijk periodes en exporteer gefilterde inzichten.")
@@ -78,7 +90,10 @@ if filtered_data.empty:
 previous_start, previous_end = previous_period_bounds(selected_dates[0], selected_dates[1])
 previous_data = filter_sales_data(data, countries, products, previous_start, previous_end)
 kpis = calculate_kpis(filtered_data)
+profit_kpis = calculate_profit_kpis(filtered_data)
 comparison = calculate_period_comparison(filtered_data, previous_data)
+target_data = revenue_vs_target(filtered_data, monthly_targets)
+target_attainment = target_data["revenue"].sum() / target_data["target_revenue"].sum() * 100
 
 
 def format_delta(change: float | None) -> str:
@@ -86,14 +101,17 @@ def format_delta(change: float | None) -> str:
     return "No prior period" if change is None else f"{change:+.1f}% vs prior period"
 
 
-columns = st.columns(4)
+columns = st.columns(5)
 columns[0].metric("Revenue", f"€{kpis['total_revenue']:,.2f}", delta=format_delta(comparison["revenue_change_percent"]))
-columns[1].metric("Orders", f"{kpis['orders']:,}", delta=format_delta(comparison["orders_change_percent"]))
-columns[2].metric("Customers", f"{kpis['customers']:,}")
-columns[3].metric("Average order value", f"€{kpis['average_order_value']:,.2f}")
+columns[1].metric("Gross profit", f"€{profit_kpis['gross_profit']:,.2f}")
+columns[2].metric("Gross margin", f"{profit_kpis['margin_percent']:.1f}%")
+columns[3].metric("Orders", f"{kpis['orders']:,}", delta=format_delta(comparison["orders_change_percent"]))
+columns[4].metric("Target progress", f"{target_attainment:.1f}%")
 
 st.caption(f"Compared with {previous_start:%d %b %Y} – {previous_end:%d %b %Y}")
 st.plotly_chart(create_monthly_performance_chart(monthly_performance(filtered_data)), width="stretch")
+st.plotly_chart(create_actual_vs_target_chart(target_data), width="stretch")
+st.caption("Targets are company-wide monthly revenue goals; use all countries and products for a full target comparison.")
 
 left, right = st.columns(2)
 with left:
@@ -138,3 +156,10 @@ with st.expander("View cleaned data"):
         file_name="filtered_sales_data.csv",
         mime="text/csv",
     )
+
+st.subheader("Top customers")
+st.dataframe(
+    top_customers(filtered_data).rename(columns={"customer_id": "Customer", "revenue": "Revenue (€)", "gross_profit": "Gross profit (€)", "orders": "Orders"}),
+    width="stretch",
+    hide_index=True,
+)
