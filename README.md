@@ -2,6 +2,11 @@
 
 [![Tests](https://github.com/phlppgdfry/python-data-analytics-project/actions/workflows/tests.yml/badge.svg)](https://github.com/phlppgdfry/python-data-analytics-project/actions/workflows/tests.yml)
 [![Live dashboard](https://img.shields.io/badge/live%20dashboard-Streamlit-ff4b4b)](https://sales-analytics-phlppgdfry.streamlit.app/)
+[![Status](https://img.shields.io/badge/status-portfolio%20complete-16a34a)](https://sales-analytics-phlppgdfry.streamlit.app/)
+[![Python](https://img.shields.io/badge/Python-3.14-3776AB?logo=python&logoColor=white)](https://www.python.org/)
+[![Pandas](https://img.shields.io/badge/Pandas-data%20analysis-150458?logo=pandas&logoColor=white)](https://pandas.pydata.org/)
+[![Streamlit](https://img.shields.io/badge/Streamlit-dashboard-FF4B4B?logo=streamlit&logoColor=white)](https://streamlit.io/)
+[![PostgreSQL](https://img.shields.io/badge/PostgreSQL-local%20data%20layer-4169E1?logo=postgresql&logoColor=white)](https://www.postgresql.org/)
 
 **[Open the live dashboard →](https://sales-analytics-phlppgdfry.streamlit.app/)**
 
