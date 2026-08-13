@@ -8,7 +8,14 @@ import pandas as pd
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 PROCESSED_DATA_PATH = PROJECT_ROOT / "data" / "processed" / "cleaned_sales.csv"
 REQUIRED_COLUMNS = ["order_id", "order_date", "customer_id", "country", "product", "quantity", "price"]
-COUNTRY_NAMES = {"belgium": "Belgium", "france": "France", "netherlands": "Netherlands"}
+COUNTRY_NAMES = {
+    "belgium": "Belgium",
+    "france": "France",
+    "netherlands": "Netherlands",
+    "germany": "Germany",
+    "united kingdom": "United Kingdom",
+    "uk": "United Kingdom",
+}
 
 
 def _parse_price(value: object) -> float | None:

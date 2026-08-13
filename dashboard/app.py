@@ -13,16 +13,32 @@ sys.path.insert(0, str(PROJECT_ROOT / "src"))
 
 from analysis import (  # noqa: E402
     calculate_kpis,
+    calculate_period_comparison,
     filter_sales_data,
+    monthly_performance,
+    previous_period_bounds,
     revenue_by_country,
     revenue_by_month,
     revenue_by_product,
 )
 from clean_data import clean_sales_data, save_cleaned_sales_data  # noqa: E402
 from load_data import load_sales_csv  # noqa: E402
+sys.path.insert(0, str(PROJECT_ROOT / "visualizations"))
+from plotly_charts import create_monthly_performance_chart  # noqa: E402
 
 
 st.set_page_config(page_title="Sales analytics", page_icon="📊", layout="wide")
+st.markdown(
+    """
+    <style>
+        .block-container { max-width: 1240px; padding-top: 2.5rem; }
+        div[data-testid="stMetric"] { background: #ffffff; border: 1px solid #dbeafe; border-radius: 14px; padding: 1rem; }
+        div[data-testid="stMetricLabel"] { color: #475569; }
+        .eyebrow { color: #2563eb; font-size: 0.8rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; }
+    </style>
+    """,
+    unsafe_allow_html=True,
+)
 
 
 @st.cache_data
@@ -36,8 +52,9 @@ def get_sales_data() -> pd.DataFrame:
 
 
 data = get_sales_data()
-st.title("Sales analytics")
-st.caption("Interactief overzicht van de schoongemaakte voorbeeldverkoopdata.")
+st.markdown('<p class="eyebrow">Portfolio project · Sales intelligence</p>', unsafe_allow_html=True)
+st.title("Sales analytics dashboard")
+st.caption("Analyseer 24 maanden verkoopdata, vergelijk periodes en exporteer gefilterde inzichten.")
 
 with st.sidebar:
     st.header("Filters")
@@ -59,28 +76,60 @@ if filtered_data.empty:
     st.warning("Geen gegevens voor deze filters.")
     st.stop()
 
+previous_start, previous_end = previous_period_bounds(selected_dates[0], selected_dates[1])
+previous_data = filter_sales_data(data, countries, products, previous_start, previous_end)
 kpis = calculate_kpis(filtered_data)
+comparison = calculate_period_comparison(filtered_data, previous_data)
+
+
+def format_delta(change: float | None) -> str:
+    """Formatteer een procentuele verandering voor Streamlit metric cards."""
+    return "No prior period" if change is None else f"{change:+.1f}% vs prior period"
+
+
 columns = st.columns(4)
-columns[0].metric("Revenue", f"€{kpis['total_revenue']:,.2f}")
-columns[1].metric("Orders", f"{kpis['orders']:,}")
+columns[0].metric("Revenue", f"€{kpis['total_revenue']:,.2f}", delta=format_delta(comparison["revenue_change_percent"]))
+columns[1].metric("Orders", f"{kpis['orders']:,}", delta=format_delta(comparison["orders_change_percent"]))
 columns[2].metric("Customers", f"{kpis['customers']:,}")
 columns[3].metric("Average order value", f"€{kpis['average_order_value']:,.2f}")
 
-monthly_data = revenue_by_month(filtered_data)
-st.plotly_chart(px.line(monthly_data, x="month", y="revenue", markers=True, title="Revenue over time"), use_container_width=True)
+st.caption(f"Compared with {previous_start:%d %b %Y} – {previous_end:%d %b %Y}")
+st.plotly_chart(create_monthly_performance_chart(monthly_performance(filtered_data)), use_container_width=True)
 
 left, right = st.columns(2)
 with left:
-    st.plotly_chart(px.bar(revenue_by_country(filtered_data), x="country", y="revenue", title="Revenue by country"), use_container_width=True)
+    st.plotly_chart(
+        px.bar(
+            revenue_by_country(filtered_data),
+            x="revenue",
+            y="country",
+            orientation="h",
+            title="Revenue by country",
+            color_discrete_sequence=["#0F766E"],
+            labels={"revenue": "Revenue (€)", "country": "Country"},
+        ).update_layout(template="plotly_white", showlegend=False, margin={"l": 0, "r": 0, "t": 50, "b": 0}),
+        use_container_width=True,
+    )
 with right:
-    st.plotly_chart(px.bar(revenue_by_product(filtered_data), x="product", y="revenue", title="Top products"), use_container_width=True)
+    st.plotly_chart(
+        px.bar(
+            revenue_by_product(filtered_data),
+            x="revenue",
+            y="product",
+            orientation="h",
+            title="Revenue by product",
+            color_discrete_sequence=["#7C3AED"],
+            labels={"revenue": "Revenue (€)", "product": "Product"},
+        ).update_layout(template="plotly_white", showlegend=False, margin={"l": 0, "r": 0, "t": 50, "b": 0}),
+        use_container_width=True,
+    )
 
 country_data = revenue_by_country(filtered_data)
 product_data = revenue_by_product(filtered_data)
 st.subheader("Key insights")
 insight_left, insight_right = st.columns(2)
-insight_left.info(f"**Top country:** {country_data.iloc[0]['country']} (€{country_data.iloc[0]['revenue']:,.2f})")
-insight_right.info(f"**Top product:** {product_data.iloc[0]['product']} (€{product_data.iloc[0]['revenue']:,.2f})")
+insight_left.success(f"**Top country:** {country_data.iloc[0]['country']} (€{country_data.iloc[0]['revenue']:,.2f})")
+insight_right.success(f"**Top product:** {product_data.iloc[0]['product']} (€{product_data.iloc[0]['revenue']:,.2f})")
 
 with st.expander("View cleaned data"):
     st.dataframe(filtered_data, use_container_width=True)

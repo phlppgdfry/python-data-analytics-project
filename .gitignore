@@ -6,6 +6,9 @@ __pycache__/
 # Local virtual environment
 .venv/
 
+# Deployment secrets: never commit database credentials.
+.streamlit/secrets.toml
+
 # Notebook checkpoints (later)
 .ipynb_checkpoints/
 

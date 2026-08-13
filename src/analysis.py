@@ -43,10 +43,46 @@ def filter_sales_data(
     return data.loc[matches].copy()
 
 
+def previous_period_bounds(start_date: object, end_date: object) -> tuple[pd.Timestamp, pd.Timestamp]:
+    """Geef de even lange periode vlak vóór de gekozen periode terug."""
+    start = pd.Timestamp(start_date)
+    end = pd.Timestamp(end_date)
+    period_length = (end - start).days + 1
+    previous_end = start - pd.Timedelta(days=1)
+    previous_start = previous_end - pd.Timedelta(days=period_length - 1)
+    return previous_start, previous_end
+
+
+def calculate_period_comparison(current_data: pd.DataFrame, previous_data: pd.DataFrame) -> dict[str, float | int | None]:
+    """Vergelijk omzet en orders met de direct voorafgaande periode."""
+    current = calculate_kpis(current_data)
+    previous = calculate_kpis(previous_data) if not previous_data.empty else {"total_revenue": 0.0, "orders": 0}
+
+    def percentage_change(current_value: float | int, previous_value: float | int) -> float | None:
+        if previous_value == 0:
+            return None
+        return round((current_value - previous_value) / previous_value * 100, 1)
+
+    return {
+        "revenue_change_percent": percentage_change(current["total_revenue"], previous["total_revenue"]),
+        "orders_change_percent": percentage_change(current["orders"], previous["orders"]),
+    }
+
+
 def revenue_by_month(data: pd.DataFrame) -> pd.DataFrame:
     """Tel omzet op per kalendermaand."""
     result = data.assign(month=data["order_date"].dt.to_period("M").dt.to_timestamp())
     return result.groupby("month", as_index=False)["revenue"].sum().sort_values("month")
+
+
+def monthly_performance(data: pd.DataFrame) -> pd.DataFrame:
+    """Bereken omzet en unieke orders per kalendermaand."""
+    result = data.assign(month=data["order_date"].dt.to_period("M").dt.to_timestamp())
+    return (
+        result.groupby("month", as_index=False)
+        .agg(revenue=("revenue", "sum"), orders=("order_id", "nunique"))
+        .sort_values("month")
+    )
 
 
 def revenue_by_country(data: pd.DataFrame) -> pd.DataFrame:

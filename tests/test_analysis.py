@@ -1,6 +1,13 @@
 import pandas as pd
 
-from analysis import calculate_kpis, filter_sales_data, revenue_by_country
+from analysis import (
+    calculate_kpis,
+    calculate_period_comparison,
+    filter_sales_data,
+    monthly_performance,
+    previous_period_bounds,
+    revenue_by_country,
+)
 
 
 def test_calculate_kpis_and_country_revenue():
@@ -44,3 +51,26 @@ def test_filter_sales_data_uses_all_filters_and_includes_boundary_dates():
     )
 
     assert filtered_data["order_id"].tolist() == [1]
+
+
+def test_period_comparison_and_monthly_performance():
+    data = pd.DataFrame(
+        {
+            "order_id": [1, 2, 3, 4],
+            "order_date": pd.to_datetime(["2025-01-01", "2025-01-31", "2025-02-01", "2025-02-28"]),
+            "customer_id": ["C1", "C2", "C3", "C4"],
+            "country": ["Belgium"] * 4,
+            "product": ["Shoes"] * 4,
+            "revenue": [100.0, 100.0, 150.0, 150.0],
+        }
+    )
+    previous_start, previous_end = previous_period_bounds("2025-02-01", "2025-02-28")
+    previous = filter_sales_data(data, ["Belgium"], ["Shoes"], previous_start, previous_end)
+    current = filter_sales_data(data, ["Belgium"], ["Shoes"], "2025-02-01", "2025-02-28")
+
+    assert (previous_start, previous_end) == (pd.Timestamp("2025-01-04"), pd.Timestamp("2025-01-31"))
+    assert calculate_period_comparison(current, previous) == {"revenue_change_percent": 200.0, "orders_change_percent": 100.0}
+    assert monthly_performance(data).to_dict("records") == [
+        {"month": pd.Timestamp("2025-01-01"), "revenue": 200.0, "orders": 2},
+        {"month": pd.Timestamp("2025-02-01"), "revenue": 300.0, "orders": 2},
+    ]
