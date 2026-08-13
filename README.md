@@ -35,6 +35,7 @@ Pandas → cleaning → analyses & NumPy-statistiek → KPI's
 - automatische vergelijking met de vorige even lange periode;
 - gecombineerde interactieve grafiek voor maandelijkse omzet én orders;
 - actual-versus-target-grafiek en een topklantenoverzicht;
+- nieuwe versus terugkerende klanten, RFM-segmenten en cohortretentie;
 - interactieve vergelijkingen per land en product;
 - belangrijkste land- en productinzicht voor de geselecteerde data;
 - download van de gefilterde, opgeschoonde data als CSV.
@@ -67,12 +68,20 @@ met december 2025. Ze laat onder andere zien dat:
 De waarden zijn synthetisch, maar de cleaning-, analyse- en dashboardflow is
 dezelfde als voor echte bedrijfsdata.
 
+## Customer intelligence
+
+De app maakt van de orderhistoriek een klantenbeeld: wie nieuw of terugkerend
+is, welke klanten de meeste waarde leveren, hoe klanten met RFM worden
+gesegmenteerd en welk percentage van elk aankoopcohort in latere maanden
+terugkeert.
+
 ## Projectstructuur
 
 ```text
 python-data-analytics-project/
 ├── data/raw/sales.csv              # brondata, met opzettelijke fouten
 ├── data/raw/monthly_targets.csv    # maandelijkse omzetdoelen
+├── data/raw/customers.csv          # synthetisch klantenbestand
 ├── data/processed/                 # output van de cleaning-pipeline
 ├── src/                            # loading, cleaning, validatie, analyse, statistiek
 ├── visualizations/                 # Matplotlib en Plotly

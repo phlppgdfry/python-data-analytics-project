@@ -1,0 +1,274 @@
+customer_id,customer_name,customer_since,acquisition_channel
+C001,Customer 001,2024-03-13,Organic
+C002,Customer 002,2024-12-09,Email
+C003,Customer 003,2024-03-21,Paid search
+C004,Customer 004,2025-09-01,Referral
+C005,Customer 005,2025-04-15,Email
+C006,Customer 006,2024-05-09,Organic
+C008,Customer 008,2025-01-30,Referral
+C009,Customer 009,2024-07-11,Referral
+C010,Customer 010,2025-07-16,Organic
+C011,Customer 011,2024-04-29,Referral
+C012,Customer 012,2025-07-24,Email
+C013,Customer 013,2025-08-04,Referral
+C014,Customer 014,2024-04-18,Referral
+C015,Customer 015,2025-02-13,Paid search
+C016,Customer 016,2024-04-25,Organic
+C017,Customer 017,2024-05-10,Organic
+C018,Customer 018,2024-07-15,Organic
+C019,Customer 019,2024-05-13,Referral
+C020,Customer 020,2024-03-28,Paid search
+C021,Customer 021,2024-02-19,Organic
+C022,Customer 022,2024-03-05,Paid search
+C023,Customer 023,2025-02-06,Referral
+C025,Customer 025,2024-10-28,Paid search
+C026,Customer 026,2024-06-19,Referral
+C027,Customer 027,2024-05-06,Email
+C028,Customer 028,2024-05-02,Paid search
+C029,Customer 029,2024-06-26,Referral
+C030,Customer 030,2024-10-09,Organic
+C031,Customer 031,2024-08-18,Organic
+C032,Customer 032,2024-11-28,Organic
+C033,Customer 033,2024-07-04,Paid search
+C034,Customer 034,2024-01-09,Organic
+C035,Customer 035,2024-02-03,Paid search
+C036,Customer 036,2024-02-12,Email
+C037,Customer 037,2024-01-30,Email
+C038,Customer 038,2025-03-25,Organic
+C039,Customer 039,2024-05-06,Organic
+C040,Customer 040,2024-08-15,Organic
+C041,Customer 041,2024-11-10,Organic
+C042,Customer 042,2024-07-03,Referral
+C043,Customer 043,2025-01-03,Email
+C044,Customer 044,2024-09-22,Email
+C045,Customer 045,2025-03-12,Referral
+C046,Customer 046,2025-07-01,Paid search
+C047,Customer 047,2024-06-08,Paid search
+C048,Customer 048,2024-05-01,Organic
+C049,Customer 049,2025-01-28,Email
+C050,Customer 050,2024-11-05,Organic
+C051,Customer 051,2024-02-22,Email
+C052,Customer 052,2024-02-15,Email
+C053,Customer 053,2024-05-16,Paid search
+C054,Customer 054,2024-09-08,Organic
+C055,Customer 055,2024-11-18,Organic
+C056,Customer 056,2025-09-18,Email
+C057,Customer 057,2024-11-23,Referral
+C058,Customer 058,2024-01-11,Email
+C059,Customer 059,2024-01-01,Referral
+C060,Customer 060,2024-07-16,Organic
+C061,Customer 061,2024-10-30,Referral
+C062,Customer 062,2024-04-26,Referral
+C063,Customer 063,2025-11-17,Organic
+C064,Customer 064,2024-01-18,Email
+C065,Customer 065,2024-10-02,Paid search
+C066,Customer 066,2025-04-15,Organic
+C067,Customer 067,2024-08-06,Paid search
+C068,Customer 068,2024-09-25,Email
+C069,Customer 069,2024-04-15,Organic
+C070,Customer 070,2024-04-14,Referral
+C071,Customer 071,2024-07-24,Referral
+C072,Customer 072,2024-01-08,Organic
+C073,Customer 073,2024-05-09,Paid search
+C074,Customer 074,2024-12-10,Organic
+C075,Customer 075,2024-06-15,Organic
+C076,Customer 076,2024-08-31,Organic
+C077,Customer 077,2024-03-03,Paid search
+C078,Customer 078,2025-01-23,Organic
+C079,Customer 079,2024-01-04,Email
+C080,Customer 080,2024-01-09,Organic
+C081,Customer 081,2024-10-28,Referral
+C082,Customer 082,2024-06-23,Email
+C083,Customer 083,2024-03-09,Referral
+C084,Customer 084,2024-04-25,Email
+C085,Customer 085,2024-09-25,Referral
+C086,Customer 086,2025-02-06,Organic
+C087,Customer 087,2024-03-26,Organic
+C088,Customer 088,2025-12-09,Organic
+C089,Customer 089,2025-05-30,Paid search
+C090,Customer 090,2024-10-21,Referral
+C091,Customer 091,2024-03-26,Paid search
+C092,Customer 092,2025-04-02,Referral
+C093,Customer 093,2024-06-14,Email
+C094,Customer 094,2024-10-29,Referral
+C096,Customer 096,2025-02-14,Email
+C097,Customer 097,2025-06-10,Referral
+C098,Customer 098,2024-07-09,Email
+C099,Customer 099,2024-02-08,Organic
+C100,Customer 100,2024-03-21,Paid search
+C101,Customer 101,2024-03-31,Paid search
+C102,Customer 102,2024-01-01,Paid search
+C103,Customer 103,2025-02-04,Organic
+C104,Customer 104,2024-11-07,Paid search
+C105,Customer 105,2024-11-23,Email
+C106,Customer 106,2024-07-19,Paid search
+C107,Customer 107,2024-05-04,Email
+C108,Customer 108,2024-10-09,Paid search
+C109,Customer 109,2025-03-27,Paid search
+C110,Customer 110,2025-06-25,Referral
+C111,Customer 111,2024-07-29,Referral
+C112,Customer 112,2025-01-18,Paid search
+C113,Customer 113,2024-01-12,Organic
+C114,Customer 114,2025-05-31,Referral
+C115,Customer 115,2024-12-24,Organic
+C116,Customer 116,2024-05-20,Organic
+C117,Customer 117,2024-03-10,Organic
+C118,Customer 118,2024-02-19,Organic
+C119,Customer 119,2024-04-05,Organic
+C120,Customer 120,2024-05-03,Email
+C121,Customer 121,2024-03-03,Email
+C122,Customer 122,2025-10-09,Paid search
+C123,Customer 123,2024-06-23,Paid search
+C124,Customer 124,2024-05-16,Referral
+C125,Customer 125,2024-04-27,Referral
+C126,Customer 126,2024-04-11,Paid search
+C127,Customer 127,2024-01-05,Paid search
+C128,Customer 128,2024-02-15,Organic
+C129,Customer 129,2025-09-03,Organic
+C130,Customer 130,2025-07-18,Paid search
+C131,Customer 131,2024-08-25,Organic
+C132,Customer 132,2024-09-01,Referral
+C133,Customer 133,2025-04-19,Paid search
+C134,Customer 134,2024-02-11,Referral
+C135,Customer 135,2024-01-29,Referral
+C136,Customer 136,2024-03-06,Organic
+C137,Customer 137,2024-12-15,Organic
+C138,Customer 138,2025-05-08,Paid search
+C139,Customer 139,2024-04-21,Referral
+C140,Customer 140,2024-05-31,Organic
+C141,Customer 141,2024-10-21,Email
+C142,Customer 142,2024-04-08,Email
+C143,Customer 143,2024-01-19,Email
+C144,Customer 144,2025-05-01,Paid search
+C145,Customer 145,2024-11-02,Paid search
+C146,Customer 146,2024-12-11,Paid search
+C147,Customer 147,2024-02-15,Paid search
+C148,Customer 148,2024-05-27,Paid search
+C149,Customer 149,2024-01-25,Organic
+C150,Customer 150,2024-06-30,Organic
+C151,Customer 151,2025-05-24,Email
+C152,Customer 152,2024-06-23,Referral
+C153,Customer 153,2024-11-08,Email
+C154,Customer 154,2024-02-05,Organic
+C155,Customer 155,2024-02-23,Referral
+C156,Customer 156,2024-05-26,Email
+C157,Customer 157,2025-06-20,Paid search
+C158,Customer 158,2024-01-12,Email
+C159,Customer 159,2024-09-08,Paid search
+C160,Customer 160,2025-06-10,Organic
+C161,Customer 161,2024-03-20,Paid search
+C162,Customer 162,2025-06-05,Referral
+C163,Customer 163,2024-10-05,Paid search
+C164,Customer 164,2024-11-23,Email
+C165,Customer 165,2024-03-21,Referral
+C166,Customer 166,2024-05-24,Email
+C167,Customer 167,2024-01-22,Referral
+C168,Customer 168,2024-04-15,Referral
+C169,Customer 169,2024-09-13,Email
+C170,Customer 170,2024-04-14,Referral
+C172,Customer 172,2024-09-21,Referral
+C174,Customer 174,2024-08-24,Referral
+C176,Customer 176,2024-09-27,Organic
+C177,Customer 177,2025-05-03,Paid search
+C178,Customer 178,2024-10-08,Paid search
+C179,Customer 179,2024-09-29,Organic
+C180,Customer 180,2024-04-02,Organic
+C181,Customer 181,2024-07-08,Organic
+C182,Customer 182,2024-04-07,Paid search
+C183,Customer 183,2025-05-31,Paid search
+C184,Customer 184,2024-01-04,Paid search
+C185,Customer 185,2024-05-08,Organic
+C186,Customer 186,2024-01-29,Email
+C187,Customer 187,2024-01-15,Paid search
+C188,Customer 188,2024-07-31,Referral
+C189,Customer 189,2024-04-09,Referral
+C190,Customer 190,2024-07-23,Referral
+C191,Customer 191,2024-07-21,Email
+C192,Customer 192,2024-08-09,Organic
+C193,Customer 193,2024-04-22,Email
+C194,Customer 194,2024-12-30,Referral
+C195,Customer 195,2024-01-15,Referral
+C196,Customer 196,2024-01-13,Email
+C197,Customer 197,2025-08-17,Referral
+C198,Customer 198,2025-07-22,Paid search
+C199,Customer 199,2024-09-10,Organic
+C200,Customer 200,2024-04-25,Email
+C201,Customer 201,2024-09-10,Email
+C202,Customer 202,2025-04-26,Email
+C203,Customer 203,2024-11-29,Email
+C204,Customer 204,2024-06-23,Organic
+C205,Customer 205,2024-08-15,Referral
+C206,Customer 206,2024-07-16,Referral
+C207,Customer 207,2024-06-25,Email
+C208,Customer 208,2024-04-11,Email
+C209,Customer 209,2024-02-06,Paid search
+C210,Customer 210,2024-03-10,Paid search
+C211,Customer 211,2024-03-30,Referral
+C212,Customer 212,2024-06-15,Paid search
+C213,Customer 213,2024-07-24,Email
+C215,Customer 215,2024-09-08,Email
+C216,Customer 216,2024-04-27,Referral
+C217,Customer 217,2024-01-19,Paid search
+C218,Customer 218,2024-06-10,Email
+C219,Customer 219,2025-12-23,Organic
+C220,Customer 220,2024-05-19,Paid search
+C221,Customer 221,2024-02-04,Email
+C223,Customer 223,2025-04-02,Paid search
+C224,Customer 224,2024-03-11,Paid search
+C225,Customer 225,2024-02-12,Paid search
+C226,Customer 226,2024-06-04,Paid search
+C227,Customer 227,2024-04-25,Paid search
+C228,Customer 228,2024-06-04,Paid search
+C229,Customer 229,2024-04-30,Email
+C230,Customer 230,2024-08-19,Referral
+C232,Customer 232,2025-02-24,Referral
+C233,Customer 233,2024-12-05,Paid search
+C234,Customer 234,2025-02-11,Email
+C235,Customer 235,2024-12-24,Organic
+C236,Customer 236,2024-06-09,Email
+C237,Customer 237,2025-04-02,Paid search
+C238,Customer 238,2024-12-05,Organic
+C239,Customer 239,2025-04-03,Referral
+C240,Customer 240,2024-10-12,Email
+C241,Customer 241,2024-05-06,Email
+C242,Customer 242,2024-12-30,Organic
+C243,Customer 243,2024-02-19,Paid search
+C244,Customer 244,2024-02-22,Referral
+C245,Customer 245,2024-12-05,Organic
+C246,Customer 246,2024-10-13,Referral
+C247,Customer 247,2024-09-21,Referral
+C248,Customer 248,2024-06-13,Referral
+C249,Customer 249,2024-01-03,Referral
+C250,Customer 250,2024-02-22,Organic
+C251,Customer 251,2024-06-19,Organic
+C252,Customer 252,2024-05-13,Referral
+C253,Customer 253,2025-02-09,Referral
+C254,Customer 254,2024-06-05,Organic
+C255,Customer 255,2025-04-13,Email
+C256,Customer 256,2024-01-07,Organic
+C257,Customer 257,2025-12-08,Paid search
+C258,Customer 258,2024-07-15,Referral
+C259,Customer 259,2024-11-13,Organic
+C260,Customer 260,2024-01-27,Referral
+C262,Customer 262,2024-12-29,Referral
+C263,Customer 263,2025-02-18,Paid search
+C264,Customer 264,2024-11-05,Paid search
+C265,Customer 265,2025-10-12,Email
+C266,Customer 266,2024-03-23,Organic
+C267,Customer 267,2024-07-28,Organic
+C268,Customer 268,2025-06-19,Email
+C269,Customer 269,2024-05-25,Email
+C270,Customer 270,2024-09-22,Organic
+C271,Customer 271,2025-03-03,Organic
+C272,Customer 272,2024-01-31,Email
+C273,Customer 273,2025-12-03,Paid search
+C274,Customer 274,2025-02-13,Organic
+C275,Customer 275,2024-03-27,Email
+C276,Customer 276,2024-12-06,Paid search
+C277,Customer 277,2024-02-02,Email
+C278,Customer 278,2024-02-24,Organic
+C279,Customer 279,2024-06-25,Referral
+C280,Customer 280,2024-06-10,Referral
+C997,Customer 997,2025-12-12,Organic
+C998,Customer 998,2025-12-07,Organic
+C999,Customer 999,2025-12-03,Organic

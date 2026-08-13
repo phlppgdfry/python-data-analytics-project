@@ -39,6 +39,19 @@ def create_actual_vs_target_chart(target_data: pd.DataFrame) -> go.Figure:
     return figure
 
 
+def create_cohort_retention_chart(retention_data: pd.DataFrame) -> go.Figure:
+    """Maak een heatmap die klantretentie per cohort toont."""
+    figure = px.imshow(
+        retention_data,
+        text_auto=".0%",
+        aspect="auto",
+        color_continuous_scale="Blues",
+        labels={"x": "Months since first purchase", "y": "Customer cohort", "color": "Retention"},
+    )
+    figure.update_layout(template="plotly_white", title={"text": "Customer retention by cohort", "x": 0, "xanchor": "left"}, margin={"l": 0, "r": 0, "t": 55, "b": 0})
+    return figure
+
+
 def create_interactive_charts(monthly_data: pd.DataFrame, country_data: pd.DataFrame, product_data: pd.DataFrame, output_dir: str | Path, performance_data: pd.DataFrame | None = None) -> list[Path]:
     """Schrijf dezelfde kerninzichten als interactieve HTML weg."""
     directory = Path(output_dir)

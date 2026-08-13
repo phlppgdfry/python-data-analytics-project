@@ -134,6 +134,70 @@ def top_customers(data: pd.DataFrame, limit: int = 10) -> pd.DataFrame:
     )
 
 
+def customer_lifecycle(all_data: pd.DataFrame, selected_data: pd.DataFrame) -> pd.DataFrame:
+    """Classificeer geselecteerde klanten als nieuw of terugkerend."""
+    first_orders = all_data.groupby("customer_id", as_index=False)["order_date"].min().rename(columns={"order_date": "first_order_date"})
+    selected_customers = (
+        selected_data.groupby("customer_id", as_index=False)
+        .agg(revenue=("revenue", "sum"), orders=("order_id", "nunique"))
+        .merge(first_orders, on="customer_id", validate="one_to_one")
+    )
+    period_start = selected_data["order_date"].min()
+    period_end = selected_data["order_date"].max()
+    selected_customers["customer_type"] = selected_customers["first_order_date"].between(period_start, period_end).map({True: "New", False: "Returning"})
+    return selected_customers
+
+
+def rfm_segments(data: pd.DataFrame) -> pd.DataFrame:
+    """Maak een RFM-score (recency, frequency, monetary) per klant."""
+    reference_date = data["order_date"].max() + pd.Timedelta(days=1)
+    rfm = data.groupby("customer_id", as_index=False).agg(
+        last_order_date=("order_date", "max"),
+        frequency=("order_id", "nunique"),
+        monetary=("revenue", "sum"),
+    )
+    rfm["recency_days"] = (reference_date - rfm["last_order_date"]).dt.days
+    rfm["recency_score"] = pd.qcut(rfm["recency_days"].rank(method="first"), 4, labels=[4, 3, 2, 1]).astype(int)
+    rfm["frequency_score"] = pd.qcut(rfm["frequency"].rank(method="first"), 4, labels=[1, 2, 3, 4]).astype(int)
+    rfm["monetary_score"] = pd.qcut(rfm["monetary"].rank(method="first"), 4, labels=[1, 2, 3, 4]).astype(int)
+
+    def label_segment(row: pd.Series) -> str:
+        if row["recency_score"] >= 3 and row["frequency_score"] >= 3 and row["monetary_score"] >= 3:
+            return "Champions"
+        if row["recency_score"] >= 3 and row["frequency_score"] >= 2:
+            return "Loyal"
+        if row["recency_score"] <= 2 and row["frequency_score"] >= 3:
+            return "At risk"
+        return "Potential"
+
+    rfm["segment"] = rfm.apply(label_segment, axis=1)
+    return rfm.sort_values(["monetary", "frequency"], ascending=False).reset_index(drop=True)
+
+
+def rfm_segment_summary(data: pd.DataFrame) -> pd.DataFrame:
+    """Vat klantsegmenten samen voor een dashboardgrafiek."""
+    return (
+        rfm_segments(data)
+        .groupby("segment", as_index=False)
+        .agg(customers=("customer_id", "nunique"), revenue=("monetary", "sum"))
+        .sort_values("revenue", ascending=False)
+    )
+
+
+def cohort_retention(data: pd.DataFrame) -> pd.DataFrame:
+    """Bereken retentie per acquisitiecohort en maand sinds eerste aankoop."""
+    orders = data[["customer_id", "order_date"]].copy()
+    orders["order_month"] = orders["order_date"].dt.to_period("M")
+    first_order_month = orders.groupby("customer_id")["order_month"].transform("min")
+    orders["cohort_month"] = first_order_month
+    orders["cohort_index"] = (orders["order_month"].dt.year - orders["cohort_month"].dt.year) * 12 + (orders["order_month"].dt.month - orders["cohort_month"].dt.month)
+    counts = orders.groupby(["cohort_month", "cohort_index"])["customer_id"].nunique().unstack(fill_value=0)
+    retention = counts.div(counts[0], axis=0).round(3)
+    retention.index = retention.index.astype(str)
+    retention.index.name = "cohort_month"
+    return retention
+
+
 def calculate_order_statistics(data: pd.DataFrame) -> dict[str, float]:
     """Pas NumPy-statistiek toe op de totale waarde per order."""
     return summarize_order_values(order_totals(data)["revenue"])

@@ -14,6 +14,8 @@ sys.path.insert(0, str(PROJECT_ROOT))
 from src.analysis import (  # noqa: E402
     calculate_kpis,
     calculate_profit_kpis,
+    cohort_retention,
+    customer_lifecycle,
     calculate_period_comparison,
     filter_sales_data,
     monthly_performance,
@@ -22,11 +24,12 @@ from src.analysis import (  # noqa: E402
     revenue_by_month,
     revenue_by_product,
     revenue_vs_target,
+    rfm_segment_summary,
     top_customers,
 )
 from src.clean_data import clean_sales_data  # noqa: E402
-from src.load_data import load_monthly_targets_csv, load_sales_csv  # noqa: E402
-from visualizations.plotly_charts import create_actual_vs_target_chart, create_monthly_performance_chart  # noqa: E402
+from src.load_data import load_customer_directory_csv, load_monthly_targets_csv, load_sales_csv  # noqa: E402
+from visualizations.plotly_charts import create_actual_vs_target_chart, create_cohort_retention_chart, create_monthly_performance_chart  # noqa: E402
 
 
 st.set_page_config(page_title="Sales analytics", page_icon="📊", layout="wide")
@@ -45,6 +48,7 @@ st.markdown(
 
 RAW_DATA_PATH = PROJECT_ROOT / "data" / "raw" / "sales.csv"
 TARGETS_DATA_PATH = PROJECT_ROOT / "data" / "raw" / "monthly_targets.csv"
+CUSTOMERS_DATA_PATH = PROJECT_ROOT / "data" / "raw" / "customers.csv"
 
 
 @st.cache_data
@@ -61,8 +65,16 @@ def get_monthly_targets(source_version: int) -> pd.DataFrame:
     return load_monthly_targets_csv(TARGETS_DATA_PATH)
 
 
+@st.cache_data
+def get_customer_directory(source_version: int) -> pd.DataFrame:
+    """Load customer profiles and refresh when their source file changes."""
+    del source_version
+    return load_customer_directory_csv(CUSTOMERS_DATA_PATH)
+
+
 data = get_sales_data(RAW_DATA_PATH.stat().st_mtime_ns)
 monthly_targets = get_monthly_targets(TARGETS_DATA_PATH.stat().st_mtime_ns)
+customer_directory = get_customer_directory(CUSTOMERS_DATA_PATH.stat().st_mtime_ns)
 st.markdown('<p class="eyebrow">Portfolio project · Sales intelligence</p>', unsafe_allow_html=True)
 st.title("Sales analytics dashboard")
 st.caption("Analyseer 24 maanden verkoopdata, vergelijk periodes en exporteer gefilterde inzichten.")
@@ -159,7 +171,36 @@ with st.expander("View cleaned data"):
 
 st.subheader("Top customers")
 st.dataframe(
-    top_customers(filtered_data).rename(columns={"customer_id": "Customer", "revenue": "Revenue (€)", "gross_profit": "Gross profit (€)", "orders": "Orders"}),
+    top_customers(filtered_data)
+    .merge(customer_directory[["customer_id", "customer_name", "acquisition_channel"]], on="customer_id", validate="one_to_one")
+    .rename(columns={"customer_name": "Customer", "acquisition_channel": "Channel", "revenue": "Revenue (€)", "gross_profit": "Gross profit (€)", "orders": "Orders"})
+    .drop(columns="customer_id"),
     width="stretch",
     hide_index=True,
 )
+
+st.divider()
+st.header("Customer intelligence")
+lifecycle_data = customer_lifecycle(data, filtered_data)
+new_customer_count = int((lifecycle_data["customer_type"] == "New").sum())
+returning_customer_count = int((lifecycle_data["customer_type"] == "Returning").sum())
+customer_columns = st.columns(3)
+customer_columns[0].metric("New customers", new_customer_count)
+customer_columns[1].metric("Returning customers", returning_customer_count)
+customer_columns[2].metric("Returning customer share", f"{returning_customer_count / len(lifecycle_data) * 100:.1f}%")
+
+customer_left, customer_right = st.columns(2)
+with customer_left:
+    lifecycle_summary = lifecycle_data.groupby("customer_type", as_index=False).agg(customers=("customer_id", "nunique"), revenue=("revenue", "sum"))
+    st.plotly_chart(
+        px.bar(lifecycle_summary, x="customer_type", y="revenue", color="customer_type", title="Revenue: new vs returning customers", labels={"customer_type": "Customer type", "revenue": "Revenue (€)"}).update_layout(template="plotly_white", showlegend=False),
+        width="stretch",
+    )
+with customer_right:
+    segment_data = rfm_segment_summary(filtered_data)
+    st.plotly_chart(
+        px.bar(segment_data, x="segment", y="customers", color="segment", title="RFM customer segments", labels={"segment": "Segment", "customers": "Customers"}).update_layout(template="plotly_white", showlegend=False),
+        width="stretch",
+    )
+
+st.plotly_chart(create_cohort_retention_chart(cohort_retention(filtered_data)), width="stretch")

@@ -95,3 +95,27 @@ def test_profit_target_and_customer_analyses():
     assert calculate_profit_kpis(data) == {"gross_profit": 140.0, "margin_percent": 40.0}
     assert revenue_vs_target(data, targets)["target_attainment_percent"].tolist() == [120.0, 83.3]
     assert top_customers(data, limit=1).iloc[0].to_dict() == {"customer_id": "C1", "revenue": 300.0, "gross_profit": 120.0, "orders": 2}
+
+
+def test_customer_lifecycle_and_cohort_retention():
+    from src.analysis import cohort_retention, customer_lifecycle
+
+    data = pd.DataFrame(
+        {
+            "order_id": [1, 2, 3, 4],
+            "order_date": pd.to_datetime(["2025-01-05", "2025-02-10", "2025-02-12", "2025-03-01"]),
+            "customer_id": ["C001", "C001", "C002", "C002"],
+            "country": ["Belgium"] * 4,
+            "product": ["Shoes"] * 4,
+            "revenue": [100.0, 100.0, 50.0, 50.0],
+            "gross_profit": [40.0, 40.0, 20.0, 20.0],
+        }
+    )
+    selected_data = data[data["order_date"].between("2025-02-01", "2025-03-31")]
+
+    lifecycle_data = customer_lifecycle(data, selected_data)
+    retention = cohort_retention(data)
+
+    assert lifecycle_data.sort_values("customer_id")["customer_type"].tolist() == ["Returning", "New"]
+    assert retention.loc["2025-01", 1] == 1.0
+    assert retention.loc["2025-02", 1] == 1.0

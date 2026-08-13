@@ -33,6 +33,7 @@ def _month_start(year: int, month: int) -> date:
 
 
 TARGETS_OUTPUT_PATH = PROJECT_ROOT / "data" / "raw" / "monthly_targets.csv"
+CUSTOMERS_OUTPUT_PATH = PROJECT_ROOT / "data" / "raw" / "customers.csv"
 
 
 def _format_money(amount: float, order_number: int) -> str:
@@ -107,6 +108,26 @@ def generate_sales_data(output_path: Path = OUTPUT_PATH) -> int:
         for month_index, (month, revenue) in enumerate(sorted(monthly_revenue.items())):
             target_factor = 0.94 + (month_index % 5) * 0.025
             writer.writerow({"month": month, "target_revenue": round(revenue * target_factor, 2)})
+
+    customer_first_purchase: dict[str, str] = {}
+    for row in rows:
+        customer_id = str(row["customer_id"])
+        order_date = str(row["order_date"])
+        if customer_id not in customer_first_purchase or order_date < customer_first_purchase[customer_id]:
+            customer_first_purchase[customer_id] = order_date
+    profile_random = random.Random(RANDOM_SEED + 1)
+    with CUSTOMERS_OUTPUT_PATH.open("w", newline="", encoding="utf-8") as output_file:
+        writer = csv.DictWriter(output_file, fieldnames=["customer_id", "customer_name", "customer_since", "acquisition_channel"], lineterminator="\n")
+        writer.writeheader()
+        for customer_id, first_purchase in sorted(customer_first_purchase.items()):
+            writer.writerow(
+                {
+                    "customer_id": customer_id,
+                    "customer_name": f"Customer {customer_id[1:]}",
+                    "customer_since": first_purchase,
+                    "acquisition_channel": profile_random.choice(["Organic", "Paid search", "Email", "Referral"]),
+                }
+            )
     return len(rows)
 
 
