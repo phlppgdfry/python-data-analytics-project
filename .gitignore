@@ -1,0 +1,14 @@
+# Python
+__pycache__/
+*.py[cod]
+.pytest_cache/
+
+# Local virtual environment
+.venv/
+
+# Notebook checkpoints (later)
+.ipynb_checkpoints/
+
+# Generated reports (later)
+reports/charts/*.png
+reports/charts/*.html

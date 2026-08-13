@@ -1,0 +1,3 @@
+# Dependencies komen erbij wanneer we ze nodig hebben.
+# Fase 1: numpy
+# Fase 2: pandas
