@@ -157,9 +157,14 @@ def rfm_segments(data: pd.DataFrame) -> pd.DataFrame:
         monetary=("revenue", "sum"),
     )
     rfm["recency_days"] = (reference_date - rfm["last_order_date"]).dt.days
-    rfm["recency_score"] = pd.qcut(rfm["recency_days"].rank(method="first"), 4, labels=[4, 3, 2, 1]).astype(int)
-    rfm["frequency_score"] = pd.qcut(rfm["frequency"].rank(method="first"), 4, labels=[1, 2, 3, 4]).astype(int)
-    rfm["monetary_score"] = pd.qcut(rfm["monetary"].rank(method="first"), 4, labels=[1, 2, 3, 4]).astype(int)
+    def quartile_score(values: pd.Series, higher_is_better: bool) -> pd.Series:
+        """Geef ook bij kleine, gefilterde selecties een stabiele score van 1 tot 4."""
+        percentile = values.rank(method="first", pct=True, ascending=higher_is_better)
+        return (percentile * 4).apply(lambda score: max(1, min(4, int(score - 1e-9) + 1)))
+
+    rfm["recency_score"] = quartile_score(rfm["recency_days"], higher_is_better=False)
+    rfm["frequency_score"] = quartile_score(rfm["frequency"], higher_is_better=True)
+    rfm["monetary_score"] = quartile_score(rfm["monetary"], higher_is_better=True)
 
     def label_segment(row: pd.Series) -> str:
         if row["recency_score"] >= 3 and row["frequency_score"] >= 3 and row["monetary_score"] >= 3:

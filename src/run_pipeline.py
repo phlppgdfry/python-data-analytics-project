@@ -1,5 +1,6 @@
 """Voer de volledige CSV-naar-inzichten-pipeline uit."""
 
+import argparse
 from pathlib import Path
 import sys
 
@@ -9,7 +10,9 @@ sys.path.insert(0, str(PROJECT_ROOT))
 from src.analysis import calculate_kpis, calculate_order_statistics, calculate_profit_kpis, monthly_performance, revenue_by_country, revenue_by_month, revenue_by_product, revenue_vs_target  # noqa: E402
 from src.clean_data import clean_sales_data, save_cleaned_sales_data  # noqa: E402
 from src.data_quality import build_data_quality_report, save_data_quality_report  # noqa: E402
+from src.generate_sample_data import generate_sales_data  # noqa: E402
 from src.load_data import load_monthly_targets_csv, load_sales_csv  # noqa: E402
+from src.load_to_postgres import load_data_to_postgres  # noqa: E402
 from visualizations.matplotlib_charts import create_static_charts  # noqa: E402
 from visualizations.plotly_charts import create_interactive_charts  # noqa: E402
 
@@ -17,7 +20,11 @@ from visualizations.plotly_charts import create_interactive_charts  # noqa: E402
 CHARTS_DIR = PROJECT_ROOT / "reports" / "charts"
 
 
-def main() -> None:
+def main(regenerate: bool = False, load_postgres: bool = False) -> None:
+    """Draai cleaning, validatie, rapportering en optioneel de database-load."""
+    if regenerate:
+        generated_rows = generate_sales_data()
+        print(f"Generated {generated_rows} raw sales rows.")
     raw_data = load_sales_csv()
     clean_data = clean_sales_data(raw_data)
     processed_path = save_cleaned_sales_data(clean_data)
@@ -43,7 +50,13 @@ def main() -> None:
     for name, value in calculate_profit_kpis(clean_data).items():
         print(f"  {name}: {value}")
     print(f"Target attainment: {target_data['target_attainment_percent'].mean():.1f}%")
+    if load_postgres:
+        print(f"Loaded PostgreSQL tables: {load_data_to_postgres()}")
 
 
 if __name__ == "__main__":
-    main()
+    parser = argparse.ArgumentParser(description="Run the reproducible sales-analytics refresh pipeline.")
+    parser.add_argument("--regenerate", action="store_true", help="Regenerate the reproducible synthetic source data first.")
+    parser.add_argument("--load-postgres", action="store_true", help="Load the cleaned result into the local Docker PostgreSQL database.")
+    arguments = parser.parse_args()
+    main(regenerate=arguments.regenerate, load_postgres=arguments.load_postgres)

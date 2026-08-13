@@ -17,6 +17,9 @@ COUNTRY_NAMES = {
     "germany": "Germany",
     "united kingdom": "United Kingdom",
     "uk": "United Kingdom",
+    "spain": "Spain",
+    "italy": "Italy",
+    "sweden": "Sweden",
 }
 
 

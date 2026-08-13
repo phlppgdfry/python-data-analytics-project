@@ -1,9 +1,9 @@
 # Cloud PostgreSQL: productiekoppeling
 
-De portfolio-app gebruikt nu een reproduceerbare CSV, zodat de publieke demo
-altijd zonder externe credentials werkt. De code in `src/load_data.py` bevat al
-`load_sales_from_postgres()`: die leest een SQL-resultaat rechtstreeks in een
-Pandas DataFrame.
+De portfolio-app gebruikt standaard een reproduceerbare CSV, zodat de publieke
+demo altijd zonder externe credentials werkt. Wanneer `DATABASE_URL` is
+ingesteld, leest het dashboard automatisch PostgreSQL via
+`load_sales_from_postgres()` en anders gebruikt het de CSV-fallback.
 
 ## Voor je een cloud-database koppelt
 
@@ -17,14 +17,13 @@ Pandas DataFrame.
 DATABASE_URL = "postgresql+psycopg://USER:PASSWORD@HOST:5432/DATABASE"
 ```
 
-## Veilige volgende implementatiestap
-
-Wanneer de database bestaat, voegen we in `dashboard/app.py` een keuze toe:
+## Huidige keuze in de app
 
 ```text
 DATABASE_URL aanwezig → PostgreSQL → Pandas → dashboard
 geen DATABASE_URL     → CSV → Pandas → dashboard
 ```
 
-Zo blijft de publieke demo betrouwbaar, terwijl de productieversie veilig van
-een beheerde database kan lezen.
+Zo blijft de publieke demo betrouwbaar, terwijl een productieversie veilig van
+een beheerde database kan lezen. Voor lokaal oefenen zonder cloudprovider staat
+de volledige flow in [LOCAL_POSTGRES.md](LOCAL_POSTGRES.md).

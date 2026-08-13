@@ -8,6 +8,21 @@ jobs:
   test:
     runs-on: ubuntu-latest
 
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_DB: analytics
+          POSTGRES_USER: analytics_user
+          POSTGRES_PASSWORD: analytics_dev_password
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U analytics_user -d analytics"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
     steps:
       - name: Check out repository
         uses: actions/checkout@v4
@@ -22,3 +37,18 @@ jobs:
 
       - name: Run tests
         run: python -m pytest -q
+
+      - name: Run PostgreSQL import integration test
+        env:
+          DATABASE_URL: postgresql+psycopg://analytics_user:analytics_dev_password@localhost:5432/analytics
+        run: python -m pytest -q tests/test_postgres_integration.py
+
+      - name: Refresh data-quality report
+        run: python src/run_pipeline.py
+
+      - name: Upload data-quality report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: data-quality-report
+          path: reports/data_quality_report.json

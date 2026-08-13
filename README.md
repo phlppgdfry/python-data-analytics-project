@@ -1,153 +1,144 @@
-# Python Data Analytics Project
+# Sales Analytics Project
 
 [![Tests](https://github.com/phlppgdfry/python-data-analytics-project/actions/workflows/tests.yml/badge.svg)](https://github.com/phlppgdfry/python-data-analytics-project/actions/workflows/tests.yml)
+[![Live dashboard](https://img.shields.io/badge/live%20dashboard-Streamlit-ff4b4b)](https://sales-analytics-phlppgdfry.streamlit.app/)
 
 **[Open the live dashboard →](https://sales-analytics-phlppgdfry.streamlit.app/)**
 
 ![Sales analytics dashboard preview](assets/dashboard-preview.png)
 
-Een volledige, werkende sales-analyticsportfolio-app. We zullen deze eindversie
-later stap voor stap ontleden en opnieuw opbouwen; zo zie je steeds waar een
-concept naartoe leidt.
+An end-to-end Python sales-analytics portfolio project. It turns deliberately imperfect sales data into validated business insights, an interactive dashboard and a reproducible local PostgreSQL workflow.
+
+> The data is synthetic. The engineering and analytics workflow mirrors how a small business-intelligence product can be structured in practice.
+
+## What it demonstrates
 
 ```text
-CSV / PostgreSQL
-       ↓
-Pandas → cleaning → analyses & NumPy-statistiek → KPI's
-       ↓                         ↓
- Matplotlib (PNG)           Plotly (interactief) → Streamlit-dashboard
+Raw CSV / PostgreSQL
+          ↓
+Pandas cleaning + Pandera data contract
+          ↓
+Revenue, profit, customer and forecasting analysis
+          ↓
+Plotly + Streamlit dashboard / Matplotlib reports
 ```
 
-## Wat deze projectversie doet
+| Area | Implementation |
+| --- | --- |
+| Data preparation | Pandas normalisation, duplicate removal, type conversion and derived revenue/profit fields |
+| Data quality | Pandera contract plus a machine-readable quality report |
+| Business intelligence | Revenue, orders, gross profit, gross margin, targets and period comparisons |
+| Customer analytics | Top customers, new vs returning customers, RFM segments and cohort retention |
+| Advanced analytics | Holt trend forecast, z-score anomaly detection and business alerts |
+| Data engineering | CSV-to-PostgreSQL import with Docker Compose; CSV fallback for the public app |
+| Product delivery | Streamlit dashboard, downloadable analysis extracts, automated tests and GitHub Actions |
 
-1. Leest 24 maanden bewust onzuivere verkoopdata uit `data/raw/sales.csv`.
-2. Normaliseert landen, datums, prijzen en producten; verwijdert ongeldige en
-   dubbele rijen; berekent omzet.
-3. Levert omzet-, brutowinst-, marge- en target-KPI's, plus statistieken.
-4. Genereert PNG-rapportgrafieken én interactieve Plotly-HTML.
-5. Toont dezelfde inzichten in een filterbaar Streamlit-dashboard.
+## Dashboard
 
-## Dashboardfeatures
+The dashboard is split into focused pages rather than one long report:
 
-- filters op periode, land en product;
-- KPI-kaarten voor omzet, orders, klanten en gemiddelde orderwaarde;
-- brutowinst, brutomarge en maandelijkse omzetdoelen;
-- automatische vergelijking met de vorige even lange periode;
-- gecombineerde interactieve grafiek voor maandelijkse omzet én orders;
-- actual-versus-target-grafiek en een topklantenoverzicht;
-- nieuwe versus terugkerende klanten, RFM-segmenten en cohortretentie;
-- een drie-maanden omzetforecast, anomaliedetectie en automatische alerts;
-- interactieve vergelijkingen per land en product;
-- belangrijkste land- en productinzicht voor de geselecteerde data;
-- download van de gefilterde, opgeschoonde data als CSV.
+- **Executive overview** — KPI cards, period comparison, monthly performance and data export.
+- **Sales & profitability** — actual versus target and gross-profit contribution by market and product.
+- **Customer intelligence** — returning customers, RFM segments, top customers and cohorts.
+- **Forecast & alerts** — three-month revenue forecast, anomaly detection and target-risk alerts.
+- **Data quality** — the data contract, retained-row rate and the latest quality report.
 
-## Installeren en uitvoeren
+All pages share the same date, country and product filters. The forecast deliberately uses the complete history so it remains statistically meaningful when exploration filters are narrow.
+
+## Demo insights
+
+The current reproducible source contains **1,717 valid orders** from January 2024 to December 2026, after four deliberately bad rows are removed.
+
+- Revenue rises from **€65,992.42 in 2024** to **€109,257.49 in 2026**.
+- **Belgium** is the largest market at **€69,372.00** in revenue.
+- **Shoes** is the highest-revenue product at **€75,861.57**.
+- Total gross profit is **€148,243.35** at a **56.17%** gross margin.
+- The source intentionally includes country casing, currency formatting, a duplicate and invalid values; the pipeline retains **99.77%** of source rows after cleaning.
+
+## Run locally
 
 ```bash
+git clone https://github.com/phlppgdfry/python-data-analytics-project.git
+cd python-data-analytics-project
+
 python3 -m venv .venv
 source .venv/bin/activate
 python -m pip install -r requirements.txt
-python src/generate_sample_data.py  # optioneel: reproduceer de brondata
+
+# Refresh cleaned data, quality report and chart outputs.
 python src/run_pipeline.py
+
 streamlit run dashboard/app.py
 ```
 
-Na de pipeline staan de schone gegevens in `data/processed/cleaned_sales.csv`
-en de grafieken in `reports/charts/`.
+For a fresh deterministic source dataset plus the complete refresh:
 
-## Business insights in deze demo
-
-De reproduceerbare demo bevat **900 geldige orders** over januari 2024 tot en
-met december 2025. Ze laat onder andere zien dat:
-
-- omzet groeide van **€54.033,50 in 2024** naar **€76.230,42 in 2025**
-  (**+41,1%**);
-- België met **€42.634,92** de grootste markt is;
-- Shoes met **€46.074,88** de hoogste productomzet heeft.
-- de totale brutowinst **€73.943,92** is bij een marge van **56,76%**.
-
-De waarden zijn synthetisch, maar de cleaning-, analyse- en dashboardflow is
-dezelfde als voor echte bedrijfsdata.
-
-## Customer intelligence
-
-De app maakt van de orderhistoriek een klantenbeeld: wie nieuw of terugkerend
-is, welke klanten de meeste waarde leveren, hoe klanten met RFM worden
-gesegmenteerd en welk percentage van elk aankoopcohort in latere maanden
-terugkeert.
-
-## Projectstructuur
-
-```text
-python-data-analytics-project/
-├── data/raw/sales.csv              # brondata, met opzettelijke fouten
-├── data/raw/monthly_targets.csv    # maandelijkse omzetdoelen
-├── data/raw/customers.csv          # synthetisch klantenbestand
-├── data/processed/                 # output van de cleaning-pipeline
-├── src/                            # loading, cleaning, validatie, analyse, statistiek
-├── visualizations/                 # Matplotlib en Plotly
-├── dashboard/app.py                # interactieve Streamlit-app
-├── sql/                            # PostgreSQL-schema en voorbeeldqueries
-├── reports/charts/                 # gegenereerde grafieken
-├── docs/                            # deployment- en databasehandleiding
-└── tests/                          # pytest-controles
+```bash
+python src/run_pipeline.py --regenerate
 ```
 
-## Belangrijkste zakelijke vragen
+## Local PostgreSQL with Docker
 
-- Wat is de totale omzet, het aantal orders, klanten en de gemiddelde orderwaarde?
-- Hoe ontwikkelt omzet zich per maand?
-- Welke landen en producten dragen het meeste bij?
-- Hoe zijn individuele orderwaarden verdeeld?
-
-## Leerroute
-
-| Fase | Onderwerp | Waar je het terugziet |
-| --- | --- | --- |
-| 0 | Python-basis en Git | `src/01_python_basics.py` |
-| 1 | NumPy/statistiek | `src/statistics.py` |
-| 2 | Pandas en CSV | `src/load_data.py` |
-| 3 | Data cleaning | `src/clean_data.py` |
-| 4 | Analyse en KPI's | `src/analysis.py` |
-| 5–6 | Matplotlib en Plotly | `visualizations/` |
-| 7 | PostgreSQL en SQL | `sql/`, `src/load_data.py` |
-| 8 | Dashboard | `dashboard/app.py` |
-
-## PostgreSQL in productie
-
-De portfolio-app kan al queryresultaten uit PostgreSQL in Pandas laden via
-`src/load_data.py`. Voor een live cloud-database staat de veilige stappenkaart
-in [docs/CLOUD_POSTGRES.md](docs/CLOUD_POSTGRES.md). Databasecredentials horen
-uitsluitend in Streamlit secrets, nooit in Git.
-
-## PostgreSQL lokaal met Docker
-
-Voor een realistische lokale bedrijfsflow start je PostgreSQL met Docker en
-laad je de schoongemaakte data erin:
+The public Streamlit deployment intentionally uses the committed CSV fallback: it is free, reliable and contains no database credentials. The project can also run against a real local PostgreSQL database to demonstrate a production-style workflow.
 
 ```bash
 docker compose up -d
-python src/load_to_postgres.py
-DATABASE_URL="postgresql+psycopg://analytics_user:analytics_dev_password@localhost:5433/analytics" streamlit run dashboard/app.py
+python src/run_pipeline.py --load-postgres
+
+DATABASE_URL="postgresql+psycopg://analytics_user:analytics_dev_password@localhost:5433/analytics" \
+streamlit run dashboard/app.py
 ```
 
-De app toont dan **Data source: PostgreSQL**. Zonder `DATABASE_URL` gebruikt
-dezelfde app automatisch de CSV-fallback, waardoor de publieke demo betrouwbaar
-en gratis blijft.
+The dashboard then reports **Source: PostgreSQL**. Stop the local database when you no longer need it:
 
-## Data quality
+```bash
+docker compose down
+```
 
-Naast de cleaning-pipeline valideert [Pandera](https://pandera.readthedocs.io/)
-de finale dataset als data contract: verplichte kolommen, geldige landen en
-producten, unieke order-ID's, positieve prijzen/kosten en een geldige marge.
-Een foute bronrij komt dus niet stilzwijgend in het dashboard terecht.
-De pipeline schrijft bovendien `reports/data_quality_report.json` met het aantal
-bronrijen, verwijderde rijen, dubbele orders en behoudpercentage.
+See [the local PostgreSQL guide](docs/LOCAL_POSTGRES.md) for the flow and [the cloud database guide](docs/CLOUD_POSTGRES.md) for an optional future deployment.
 
-## Advanced analytics
+## Data quality and testing
 
-Met `statsmodels` maakt de app een drie-maanden omzetforecast op basis van de
-volledige maandhistoriek. Een z-score detecteert maanden met uitzonderlijke
-omzet; samen met target attainment levert dat compacte, actioneerbare alerts
-in het dashboard op. De forecast gebruikt synthetische data en is daarom een
-technische demonstratie, geen financieel advies.
+`src/validation.py` defines the Pandera data contract. A row must have a unique order ID, recognised country/product, valid customer ID, positive quantities and prices, a cost lower than price, and correctly derived revenue/profit fields.
+
+```bash
+python -m pytest -q
+```
+
+The test suite covers cleaning, business calculations, generation, forecasts, alerts, dashboard rendering and—when `DATABASE_URL` is present—the PostgreSQL import. GitHub Actions runs the tests on each push and pull request, starts a temporary PostgreSQL service and uploads the refreshed quality report as an artifact.
+
+## Project structure
+
+```text
+python-data-analytics-project/
+├── dashboard/                 # Streamlit entry point, shared UX and five focused pages
+├── data/raw/                  # reproducible synthetic source data and targets
+├── data/processed/            # cleaned sales output
+├── src/                       # generation, loading, cleaning, validation and analytics
+├── visualizations/            # Plotly dashboard figures and Matplotlib report charts
+├── sql/                       # PostgreSQL schema and dashboard query
+├── reports/                   # data-quality report and generated charts
+├── tests/                     # unit, dashboard and PostgreSQL integration tests
+├── docker-compose.yml         # local PostgreSQL service
+└── .github/workflows/         # continuous integration
+```
+
+## Technology stack
+
+`Python` · `Pandas` · `NumPy` · `Pandera` · `Plotly` · `Matplotlib` · `Streamlit` · `statsmodels` · `PostgreSQL` · `SQLAlchemy` · `psycopg` · `Docker Compose` · `pytest` · `GitHub Actions`
+
+## Learning map
+
+| Topic | Main files |
+| --- | --- |
+| Python functions and Git | `src/01_python_basics.py` |
+| Pandas loading and cleaning | `src/load_data.py`, `src/clean_data.py` |
+| Data contracts | `src/validation.py` |
+| KPIs and customer analysis | `src/analysis.py` |
+| Forecasts and alerts | `src/forecasting.py` |
+| SQL and PostgreSQL | `sql/`, `src/load_to_postgres.py` |
+| Dashboard product work | `dashboard/` |
+
+## Optional cloud database
+
+A managed cloud PostgreSQL database is **not required** for this portfolio. Add one only when data must change online or multiple users/services need the same live source. Credentials must live in Streamlit Secrets or environment variables—never in this repository. The app already switches to PostgreSQL automatically when a `DATABASE_URL` is configured.

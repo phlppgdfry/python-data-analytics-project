@@ -122,7 +122,7 @@ def test_customer_lifecycle_and_cohort_retention():
 
 
 def test_forecast_and_anomaly_detection():
-    from src.forecasting import detect_monthly_anomalies, forecast_monthly_revenue
+    from src.forecasting import detect_monthly_anomalies, forecast_monthly_revenue, generate_alerts
 
     dates = pd.date_range("2024-01-01", periods=12, freq="MS")
     data = pd.DataFrame(
@@ -139,6 +139,29 @@ def test_forecast_and_anomaly_detection():
 
     forecast = forecast_monthly_revenue(data, periods=3)
     anomalies = detect_monthly_anomalies(data)
+    targets = pd.DataFrame({"month": dates, "target_revenue": [100.0] * 11 + [2_000.0]})
+    alerts = generate_alerts(data, targets)
 
     assert forecast["series"].value_counts().to_dict() == {"Actual": 12, "Forecast": 3}
     assert len(anomalies) == 12
+    assert any(alert["level"] == "warning" for alert in alerts)
+
+
+def test_rfm_segments_work_for_a_single_filtered_customer():
+    from src.analysis import rfm_segments
+
+    data = pd.DataFrame(
+        {
+            "order_id": [1],
+            "order_date": pd.to_datetime(["2025-01-01"]),
+            "customer_id": ["C001"],
+            "country": ["Belgium"],
+            "product": ["Shoes"],
+            "revenue": [100.0],
+            "gross_profit": [40.0],
+        }
+    )
+
+    rfm = rfm_segments(data)
+    assert rfm.loc[0, "segment"] == "Champions"
+    assert rfm.loc[0, ["recency_score", "frequency_score", "monetary_score"]].tolist() == [4, 4, 4]
