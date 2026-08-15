@@ -59,6 +59,32 @@ def create_forecast_chart(forecast_data: pd.DataFrame) -> go.Figure:
     return figure
 
 
+def create_forecast_evaluation_chart(predictions: pd.DataFrame) -> go.Figure:
+    """Vergelijk ongeziene werkelijke omzet met elke modelvoorspelling."""
+    figure = px.line(
+        predictions,
+        x="month",
+        y="predicted_revenue",
+        color="model",
+        markers=True,
+        title="Forecast backtest: predictions on unseen months",
+        labels={"predicted_revenue": "Revenue (€)", "month": "Month", "model": "Model"},
+        color_discrete_map={"Holt trend": "#2563EB", "Random forest": "#F97316"},
+    )
+    actual = predictions.drop_duplicates("month")
+    figure.add_trace(
+        go.Scatter(
+            x=actual["month"],
+            y=actual["actual_revenue"],
+            name="Actual revenue",
+            mode="lines+markers",
+            line={"color": "#0F172A", "width": 3, "dash": "dot"},
+        )
+    )
+    figure.update_layout(template="plotly_white", margin={"l": 0, "r": 0, "t": 55, "b": 0})
+    return figure
+
+
 def create_interactive_charts(monthly_data: pd.DataFrame, country_data: pd.DataFrame, product_data: pd.DataFrame, output_dir: str | Path, performance_data: pd.DataFrame | None = None) -> list[Path]:
     """Schrijf dezelfde kerninzichten als interactieve HTML weg."""
     directory = Path(output_dir)

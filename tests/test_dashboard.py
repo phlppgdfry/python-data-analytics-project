@@ -16,6 +16,7 @@ PROJECT_ROOT = Path(__file__).resolve().parents[1]
         "dashboard/pages/overview.py",
         "dashboard/pages/profitability.py",
         "dashboard/pages/customers.py",
+        "dashboard/pages/segments.py",
         "dashboard/pages/forecast.py",
         "dashboard/pages/data_quality.py",
     ],

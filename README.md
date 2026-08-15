@@ -23,9 +23,9 @@ Raw CSV / PostgreSQL
           ↓
 Pandas cleaning + Pandera data contract
           ↓
-Revenue, profit, customer and forecasting analysis
+Revenue, profit, ML customer segmentation and evaluated forecasting
           ↓
-Plotly + Streamlit dashboard / Matplotlib reports
+Parquet + DuckDB analytical SQL → Plotly + Streamlit dashboard / Matplotlib reports
 ```
 
 | Area | Implementation |
@@ -34,7 +34,9 @@ Plotly + Streamlit dashboard / Matplotlib reports
 | Data quality | Pandera contract plus a machine-readable quality report |
 | Business intelligence | Revenue, orders, gross profit, gross margin, targets and period comparisons |
 | Customer analytics | Top customers, new vs returning customers, RFM segments and cohort retention |
-| Advanced analytics | Holt trend forecast, z-score anomaly detection and business alerts |
+| Advanced analytics | Holt trend forecast, Random Forest comparison, holdout evaluation, z-score anomaly detection and business alerts |
+| Customer segmentation | RFM features, StandardScaler and reproducible K-Means clusters with actionable profiles |
+| Analytical storage | Parquet export plus DuckDB SQL directly on columnar files |
 | Data engineering | CSV-to-PostgreSQL import with Docker Compose; CSV fallback for the public app |
 | Product delivery | Streamlit dashboard, downloadable analysis extracts, automated tests and GitHub Actions |
 
@@ -45,7 +47,8 @@ The dashboard is split into focused pages rather than one long report:
 - **Executive overview** — KPI cards, period comparison, monthly performance and data export.
 - **Sales & profitability** — actual versus target and gross-profit contribution by market and product.
 - **Customer intelligence** — returning customers, RFM segments, top customers and cohorts.
-- **Forecast & alerts** — three-month revenue forecast, anomaly detection and target-risk alerts.
+- **ML customer segments** — K-Means groups based on recency, frequency and revenue; profile summaries make each group actionable.
+- **Forecast & alerts** — three-month revenue forecast, Holt-versus-Random-Forest holdout evaluation, anomaly detection and target-risk alerts.
 - **Data quality** — the data contract, retained-row rate and the latest quality report.
 
 All pages share the same date, country and product filters. The forecast deliberately uses the complete history so it remains statistically meaningful when exploration filters are narrow.
@@ -76,6 +79,29 @@ python src/run_pipeline.py
 
 streamlit run dashboard/app.py
 ```
+
+The pipeline produces both `data/processed/cleaned_sales.csv` and
+`data/processed/cleaned_sales.parquet`. The latter is a compact columnar format
+for analytics; `src/analytics_store.py` demonstrates DuckDB SQL directly on it,
+without first loading data into a database server.
+
+## Why the ML additions matter
+
+This project uses machine learning only where it answers a decision question:
+
+- **Who should receive which retention or upsell action?** K-Means uses the three RFM dimensions—days since last order, order count and revenue—to find behavioral groups. `StandardScaler` makes the units comparable before distance-based clustering. Cluster numbers are arbitrary, so the app ranks the profiles and gives them readable names.
+- **Which forecasting approach is credible?** The final six known months are excluded from training and used as a holdout set. The dashboard reports MAE (average error in euros) and RMSE (which penalises large misses more). This compares Holt's trend model with a Random Forest honestly instead of reporting an in-sample score.
+- **When should analytics use a file rather than a database?** The cleaned Parquet file is fast, typed and compact. DuckDB can query it with SQL locally, which is a useful middle ground between CSV and a managed warehouse.
+
+## Business decisions enabled
+
+| Question | Evidence in the app | Example action |
+| --- | --- | --- |
+| Which customers deserve retention attention? | ML segment profile with recency, frequency and revenue | Re-engage inactive high-value customers with a targeted offer. |
+| Is a forecast useful enough to plan from? | Six-month Holt vs Random Forest backtest with MAE/RMSE | Prefer the model with the lower out-of-sample error for monthly planning. |
+| Where is revenue concentrated? | Country/product dashboards and DuckDB revenue query | Prioritise inventory or campaigns in the strongest markets. |
+
+The existing dashboard preview above shows the product interface; after running it locally, use the **ML customer segments** and **Forecast & alerts** pages as the strongest demo screens for a portfolio walkthrough.
 
 For a fresh deterministic source dataset plus the complete refresh:
 
@@ -131,7 +157,7 @@ python-data-analytics-project/
 
 ## Technology stack
 
-`Python` · `Pandas` · `NumPy` · `Pandera` · `Plotly` · `Matplotlib` · `Streamlit` · `statsmodels` · `PostgreSQL` · `SQLAlchemy` · `psycopg` · `Docker Compose` · `pytest` · `GitHub Actions`
+`Python` · `Pandas` · `NumPy` · `scikit-learn` · `Pandera` · `Plotly` · `Matplotlib` · `Streamlit` · `statsmodels` · `DuckDB` · `Parquet` · `PyArrow` · `PostgreSQL` · `SQLAlchemy` · `psycopg` · `Docker Compose` · `pytest` · `GitHub Actions`
 
 ## Learning map
 
@@ -142,6 +168,8 @@ python-data-analytics-project/
 | Data contracts | `src/validation.py` |
 | KPIs and customer analysis | `src/analysis.py` |
 | Forecasts and alerts | `src/forecasting.py` |
+| ML customer segmentation | `src/segmentation.py` |
+| Parquet and DuckDB analytics | `src/analytics_store.py` |
 | SQL and PostgreSQL | `sql/`, `src/load_to_postgres.py` |
 | Dashboard product work | `dashboard/` |
 

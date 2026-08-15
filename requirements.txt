@@ -7,4 +7,7 @@ streamlit==1.61.1
 sqlalchemy==2.0.52
 psycopg[binary]==3.3.4
 statsmodels==0.14.6
+scikit-learn>=1.6
+duckdb>=1.1
+pyarrow>=18
 pytest==9.1.1

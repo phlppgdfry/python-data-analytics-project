@@ -165,3 +165,49 @@ def test_rfm_segments_work_for_a_single_filtered_customer():
     rfm = rfm_segments(data)
     assert rfm.loc[0, "segment"] == "Champions"
     assert rfm.loc[0, ["recency_score", "frequency_score", "monetary_score"]].tolist() == [4, 4, 4]
+
+
+def test_ml_customer_segments_are_reproducible_and_complete():
+    from src.segmentation import cluster_customers, customer_cluster_summary
+
+    data = pd.DataFrame(
+        {
+            "order_id": range(1, 9),
+            "order_date": pd.to_datetime(["2025-01-01", "2025-01-02", "2025-02-01", "2025-02-02", "2025-03-01", "2025-03-02", "2025-04-01", "2025-04-02"]),
+            "customer_id": ["C001", "C002", "C003", "C004", "C001", "C002", "C003", "C004"],
+            "country": ["Belgium"] * 8,
+            "product": ["Shoes"] * 8,
+            "revenue": [100.0, 300.0, 50.0, 500.0, 100.0, 300.0, 50.0, 500.0],
+            "gross_profit": [40.0] * 8,
+        }
+    )
+
+    clusters = cluster_customers(data, n_clusters=3)
+    summary = customer_cluster_summary(data, n_clusters=3)
+
+    assert len(clusters) == 4
+    assert clusters["cluster_name"].notna().all()
+    assert summary["customers"].sum() == 4
+
+
+def test_forecast_evaluation_keeps_final_months_out_of_training():
+    from src.forecasting import evaluate_forecast_models
+
+    dates = pd.date_range("2024-01-01", periods=18, freq="MS")
+    data = pd.DataFrame(
+        {
+            "order_id": range(1, 19),
+            "order_date": dates,
+            "customer_id": [f"C{number:03d}" for number in range(1, 19)],
+            "country": ["Belgium"] * 18,
+            "product": ["Shoes"] * 18,
+            "revenue": [100.0 * (index + 1) for index in range(18)],
+            "gross_profit": [40.0 * (index + 1) for index in range(18)],
+        }
+    )
+
+    predictions, metrics = evaluate_forecast_models(data, holdout_months=6)
+
+    assert len(predictions) == 12
+    assert set(metrics["model"]) == {"Holt trend", "Random forest"}
+    assert (metrics[["MAE", "RMSE"]] >= 0).all().all()

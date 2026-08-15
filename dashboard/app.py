@@ -21,6 +21,7 @@ navigation = st.navigation(
             st.Page("pages/overview.py", title="Executive overview", icon="📊", default=True),
             st.Page("pages/profitability.py", title="Sales & profitability", icon="💶"),
             st.Page("pages/customers.py", title="Customer intelligence", icon="👥"),
+            st.Page("pages/segments.py", title="ML customer segments", icon="🧩"),
             st.Page("pages/forecast.py", title="Forecast & alerts", icon="🔭"),
         ],
         "Operations": [
