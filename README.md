@@ -114,10 +114,13 @@ python src/run_pipeline.py --regenerate
 The public Streamlit deployment intentionally uses the committed CSV fallback: it is free, reliable and contains no database credentials. The project can also run against a real local PostgreSQL database to demonstrate a production-style workflow.
 
 ```bash
+python3 scripts/setup_local_env.py
+set -a
+source .env
+set +a
 docker compose up -d
 python src/run_pipeline.py --load-postgres
 
-DATABASE_URL="postgresql+psycopg://analytics_user:analytics_dev_password@localhost:5433/analytics" \
 streamlit run dashboard/app.py
 ```
 
@@ -176,3 +179,21 @@ python-data-analytics-project/
 ## Optional cloud database
 
 A managed cloud PostgreSQL database is **not required** for this portfolio. Add one only when data must change online or multiple users/services need the same live source. Credentials must live in Streamlit Secrets or environment variables—never in this repository. The app already switches to PostgreSQL automatically when a `DATABASE_URL` is configured.
+
+## Local database credentials
+
+Run `python3 scripts/setup_local_env.py` before starting a new local database. It
+creates a private `.env` with a random password and matching `DATABASE_URL`, and
+refuses to overwrite existing configuration. Docker Compose reads `.env`; for
+Python commands, dbt or Prisma CLI, export it first:
+
+```bash
+set -a
+source .env
+set +a
+```
+
+For an existing PostgreSQL volume, keep its current credentials until you change
+the database role password and update `.env` together. Changing an environment
+variable does not rotate the password stored in PostgreSQL. Never reuse the old
+public demo credentials on a reachable or production database.

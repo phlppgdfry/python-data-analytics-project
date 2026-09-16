@@ -8,18 +8,23 @@ import plotly.graph_objects as go
 from plotly.subplots import make_subplots
 
 
+REVENUE_LABEL = "Revenue (€)"
+LINE_MARKER_MODE = "lines+markers"
+
+
+
 def create_monthly_performance_chart(performance_data: pd.DataFrame) -> go.Figure:
     """Maak een gecombineerde omzet- en ordergrafiek met twee schalen."""
     figure = make_subplots(specs=[[{"secondary_y": True}]])
     figure.add_trace(go.Bar(x=performance_data["month"], y=performance_data["revenue"], name="Revenue", marker_color="#2563EB"), secondary_y=False)
-    figure.add_trace(go.Scatter(x=performance_data["month"], y=performance_data["orders"], name="Orders", mode="lines+markers", line={"color": "#F97316", "width": 3}), secondary_y=True)
+    figure.add_trace(go.Scatter(x=performance_data["month"], y=performance_data["orders"], name="Orders", mode=LINE_MARKER_MODE, line={"color": "#F97316", "width": 3}), secondary_y=True)
     figure.update_layout(
         template="plotly_white",
         title={"text": "Monthly revenue and orders", "x": 0, "xanchor": "left"},
         legend={"orientation": "h", "x": 0, "xanchor": "left", "y": 1.02, "yanchor": "bottom"},
         margin={"l": 0, "r": 0, "t": 85, "b": 0},
     )
-    figure.update_yaxes(title_text="Revenue (€)", secondary_y=False)
+    figure.update_yaxes(title_text=REVENUE_LABEL, secondary_y=False)
     figure.update_yaxes(title_text="Orders", secondary_y=True)
     return figure
 
@@ -28,13 +33,13 @@ def create_actual_vs_target_chart(target_data: pd.DataFrame) -> go.Figure:
     """Toon werkelijke omzet als kolommen tegenover een maandtargetlijn."""
     figure = go.Figure()
     figure.add_trace(go.Bar(x=target_data["month"], y=target_data["revenue"], name="Actual revenue", marker_color="#2563EB"))
-    figure.add_trace(go.Scatter(x=target_data["month"], y=target_data["target_revenue"], name="Revenue target", mode="lines+markers", line={"color": "#F97316", "width": 3, "dash": "dash"}))
+    figure.add_trace(go.Scatter(x=target_data["month"], y=target_data["target_revenue"], name="Revenue target", mode=LINE_MARKER_MODE, line={"color": "#F97316", "width": 3, "dash": "dash"}))
     figure.update_layout(
         template="plotly_white",
         title={"text": "Actual revenue vs target", "x": 0, "xanchor": "left"},
         legend={"orientation": "h", "x": 0, "xanchor": "left", "y": 1.02, "yanchor": "bottom"},
         margin={"l": 0, "r": 0, "t": 85, "b": 0},
-        yaxis_title="Revenue (€)",
+        yaxis_title=REVENUE_LABEL,
     )
     return figure
 
@@ -54,7 +59,7 @@ def create_cohort_retention_chart(retention_data: pd.DataFrame) -> go.Figure:
 
 def create_forecast_chart(forecast_data: pd.DataFrame) -> go.Figure:
     """Toon historische omzet samen met een visueel onderscheiden forecast."""
-    figure = px.line(forecast_data, x="month", y="revenue", color="series", markers=True, color_discrete_map={"Actual": "#2563EB", "Forecast": "#F97316"}, title="Three-month revenue forecast", labels={"revenue": "Revenue (€)", "month": "Month"})
+    figure = px.line(forecast_data, x="month", y="revenue", color="series", markers=True, color_discrete_map={"Actual": "#2563EB", "Forecast": "#F97316"}, title="Three-month revenue forecast", labels={"revenue": REVENUE_LABEL, "month": "Month"})
     figure.update_layout(template="plotly_white", margin={"l": 0, "r": 0, "t": 55, "b": 0})
     return figure
 
@@ -68,7 +73,7 @@ def create_forecast_evaluation_chart(predictions: pd.DataFrame) -> go.Figure:
         color="model",
         markers=True,
         title="Forecast backtest: predictions on unseen months",
-        labels={"predicted_revenue": "Revenue (€)", "month": "Month", "model": "Model"},
+        labels={"predicted_revenue": REVENUE_LABEL, "month": "Month", "model": "Model"},
         color_discrete_map={"Holt trend": "#2563EB", "Random forest": "#F97316"},
     )
     actual = predictions.drop_duplicates("month")
@@ -77,7 +82,7 @@ def create_forecast_evaluation_chart(predictions: pd.DataFrame) -> go.Figure:
             x=actual["month"],
             y=actual["actual_revenue"],
             name="Actual revenue",
-            mode="lines+markers",
+            mode=LINE_MARKER_MODE,
             line={"color": "#0F172A", "width": 3, "dash": "dot"},
         )
     )
@@ -96,7 +101,7 @@ def create_interactive_charts(monthly_data: pd.DataFrame, country_data: pd.DataF
     ]
     outputs = []
     for figure, filename in charts:
-        figure.update_layout(template="plotly_white", yaxis_title="Revenue (€)")
+        figure.update_layout(template="plotly_white", yaxis_title=REVENUE_LABEL)
         output_path = directory / filename
         figure.write_html(output_path, include_plotlyjs="cdn")
         outputs.append(output_path)

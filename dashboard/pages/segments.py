@@ -7,6 +7,10 @@ from dashboard.shared import get_dashboard_context, page_intro
 from src.segmentation import cluster_customers, customer_cluster_summary
 
 
+REVENUE_LABEL = "Revenue (€)"
+
+
+
 context = get_dashboard_context()
 if context is None:
     st.stop()
@@ -32,7 +36,7 @@ with chart_left:
         color="cluster_name",
         hover_data=["customer_id", "recency_days"],
         title="Customer value and purchase frequency",
-        labels={"frequency": "Orders", "monetary": "Revenue (€)", "cluster_name": "Segment"},
+        labels={"frequency": "Orders", "monetary": REVENUE_LABEL, "cluster_name": "Segment"},
     )
     scatter.update_layout(template="plotly_white", legend_title_text="Segment")
     st.plotly_chart(scatter, width="stretch")
@@ -44,7 +48,7 @@ with chart_right:
         color="cluster_name",
         text="customers",
         title="Revenue concentration by segment",
-        labels={"cluster_name": "Segment", "revenue": "Revenue (€)", "customers": "Customers"},
+        labels={"cluster_name": "Segment", "revenue": REVENUE_LABEL, "customers": "Customers"},
     )
     bar.update_layout(template="plotly_white", showlegend=False)
     st.plotly_chart(bar, width="stretch")
@@ -56,7 +60,7 @@ profiles = summary.rename(
         "customers": "Customers",
         "average_recency_days": "Avg. recency (days)",
         "average_orders": "Avg. orders",
-        "revenue": "Revenue (€)",
+        "revenue": REVENUE_LABEL,
     }
 ).drop(columns="cluster")
 st.dataframe(profiles, width="stretch", hide_index=True)

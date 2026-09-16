@@ -8,6 +8,10 @@ from src.analysis import profit_by_country, profit_by_product, revenue_by_countr
 from visualizations.plotly_charts import create_actual_vs_target_chart
 
 
+GROSS_PROFIT_LABEL = "Gross profit (€)"
+
+
+
 context = get_dashboard_context()
 if context is None:
     st.stop()
@@ -30,17 +34,17 @@ left, right = st.columns(2)
 with left:
     country_data = revenue_by_country(filtered_data).merge(profit_by_country(filtered_data), on="country", validate="one_to_one")
     st.plotly_chart(
-        px.bar(country_data, x="gross_profit", y="country", orientation="h", title="Gross profit by country", color_discrete_sequence=["#0F766E"], labels={"gross_profit": "Gross profit (€)", "country": "Country"}).update_layout(template="plotly_white", showlegend=False, margin={"l": 0, "r": 0, "t": 50, "b": 0}),
+        px.bar(country_data, x="gross_profit", y="country", orientation="h", title="Gross profit by country", color_discrete_sequence=["#0F766E"], labels={"gross_profit": GROSS_PROFIT_LABEL, "country": "Country"}).update_layout(template="plotly_white", showlegend=False, margin={"l": 0, "r": 0, "t": 50, "b": 0}),
         width="stretch",
     )
 with right:
     product_data = revenue_by_product(filtered_data).merge(profit_by_product(filtered_data), on="product", validate="one_to_one")
     st.plotly_chart(
-        px.bar(product_data, x="gross_profit", y="product", orientation="h", title="Gross profit by product", color_discrete_sequence=["#7C3AED"], labels={"gross_profit": "Gross profit (€)", "product": "Product"}).update_layout(template="plotly_white", showlegend=False, margin={"l": 0, "r": 0, "t": 50, "b": 0}),
+        px.bar(product_data, x="gross_profit", y="product", orientation="h", title="Gross profit by product", color_discrete_sequence=["#7C3AED"], labels={"gross_profit": GROSS_PROFIT_LABEL, "product": "Product"}).update_layout(template="plotly_white", showlegend=False, margin={"l": 0, "r": 0, "t": 50, "b": 0}),
         width="stretch",
     )
 
 st.subheader("Market contribution")
-contribution = country_data[["country", "revenue", "gross_profit"]].rename(columns={"country": "Country", "revenue": "Revenue (€)", "gross_profit": "Gross profit (€)"})
+contribution = country_data[["country", "revenue", "gross_profit"]].rename(columns={"country": "Country", "revenue": "Revenue (€)", "gross_profit": GROSS_PROFIT_LABEL})
 st.dataframe(contribution, width="stretch", hide_index=True)
 st.download_button("Download profitability summary", contribution.to_csv(index=False).encode("utf-8"), "profitability_by_country.csv", "text/csv", width="content")

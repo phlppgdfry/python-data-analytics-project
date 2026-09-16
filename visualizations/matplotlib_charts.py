@@ -9,6 +9,10 @@ import matplotlib.pyplot as plt
 import pandas as pd
 
 
+REVENUE_LABEL = "Revenue (€)"
+
+
+
 def _save_figure(filename: str, output_dir: str | Path) -> Path:
     directory = Path(output_dir)
     directory.mkdir(parents=True, exist_ok=True)
@@ -28,20 +32,20 @@ def create_static_charts(monthly_data: pd.DataFrame, country_data: pd.DataFrame,
     plt.plot(monthly_data["month"], monthly_data["revenue"], marker="o", color="#2563eb")
     plt.title("Monthly revenue")
     plt.xlabel("Month")
-    plt.ylabel("Revenue (€)")
+    plt.ylabel(REVENUE_LABEL)
     outputs.append(_save_figure("monthly_revenue.png", output_dir))
 
     plt.figure(figsize=(7, 4.5))
     plt.bar(country_data["country"], country_data["revenue"], color="#0f766e")
     plt.title("Revenue by country")
     plt.xlabel("Country")
-    plt.ylabel("Revenue (€)")
+    plt.ylabel(REVENUE_LABEL)
     outputs.append(_save_figure("revenue_by_country.png", output_dir))
 
     plt.figure(figsize=(7, 4.5))
     plt.bar(product_data["product"], product_data["revenue"], color="#7c3aed")
     plt.title("Revenue by product")
     plt.xlabel("Product")
-    plt.ylabel("Revenue (€)")
+    plt.ylabel(REVENUE_LABEL)
     outputs.append(_save_figure("revenue_by_product.png", output_dir))
     return outputs

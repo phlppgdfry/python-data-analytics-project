@@ -46,7 +46,7 @@ def evaluate_forecast_models(data: pd.DataFrame, holdout_months: int = 6) -> tup
             }
         )
 
-    forest = RandomForestRegressor(n_estimators=300, min_samples_leaf=2, random_state=42)
+    forest = RandomForestRegressor(n_estimators=300, max_features=1.0, min_samples_leaf=2, random_state=42)
     forest.fit(features(training), training["revenue"])
     forest_predictions = forest.predict(features(actual))
     predictions = pd.concat(

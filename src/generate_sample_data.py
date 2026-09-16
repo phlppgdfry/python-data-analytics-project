@@ -7,6 +7,10 @@ from pathlib import Path
 import random
 
 
+UNITED_KINGDOM = "United Kingdom"
+
+
+
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 OUTPUT_PATH = PROJECT_ROOT / "data" / "raw" / "sales.csv"
 RANDOM_SEED = 42
@@ -20,13 +24,13 @@ PRODUCTS = {
     "Boots": {"price": 149.99, "unit_cost": 71.0},
     "Sportswear": {"price": 69.99, "unit_cost": 28.0},
 }
-COUNTRIES = ["Belgium", "France", "Netherlands", "Germany", "United Kingdom", "Spain", "Italy", "Sweden"]
+COUNTRIES = ["Belgium", "France", "Netherlands", "Germany", UNITED_KINGDOM, "Spain", "Italy", "Sweden"]
 COUNTRY_VARIANTS = {
     "Belgium": ["Belgium", "belgium", "BELGIUM "],
     "France": ["France", "france"],
     "Netherlands": ["Netherlands", "netherlands"],
     "Germany": ["Germany", "germany"],
-    "United Kingdom": ["United Kingdom", "UK", "united kingdom"],
+    UNITED_KINGDOM: [UNITED_KINGDOM, "UK", "united kingdom"],
     "Spain": ["Spain", "spain", "SPAIN "],
     "Italy": ["Italy", "italy"],
     "Sweden": ["Sweden", "sweden"],
