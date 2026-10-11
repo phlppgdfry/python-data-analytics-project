@@ -1,5 +1,7 @@
 # Sales Analytics Project
 
+> **Nederlands leren met deze repo:** [Start de leergids](docs/leren/README.md) — code stap voor stap, vaardigheden, oefeningen met antwoorden, herhaalkaarten en je eigen leerlogboek.
+
 [![Tests](https://github.com/phlppgdfry/python-data-analytics-project/actions/workflows/tests.yml/badge.svg)](https://github.com/phlppgdfry/python-data-analytics-project/actions/workflows/tests.yml)
 [![Live dashboard](https://img.shields.io/badge/live%20dashboard-Streamlit-ff4b4b)](https://sales-analytics-phlppgdfry.streamlit.app/)
 [![Status](https://img.shields.io/badge/status-portfolio%20complete-16a34a)](https://sales-analytics-phlppgdfry.streamlit.app/)
